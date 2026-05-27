@@ -23,7 +23,7 @@ Object.assign(root.style, {
 
 const hudWrap = document.createElement('div');
 Object.assign(hudWrap.style, { width: '100%', maxWidth: '420px', margin: '0 auto' });
-hudWrap.appendChild(createHud({ balance, loop }));
+hudWrap.appendChild(createHud({ balance }));
 
 const title = document.createElement('h1');
 title.textContent = 'kitchen sink — pr 2';

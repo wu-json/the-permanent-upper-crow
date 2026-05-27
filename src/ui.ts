@@ -1,13 +1,14 @@
 export interface HudOptions {
   balance: number;
-  loop: number;
 }
 
 export function formatMoney(n: number): string {
   return `$ ${n.toLocaleString('en-US')}`;
 }
 
-export function createHud({ balance, loop }: HudOptions): HTMLElement {
+// The loop count is intentionally not shown — the player should
+// realize the game is looping from the climbing prices alone.
+export function createHud({ balance }: HudOptions): HTMLElement {
   const hud = document.createElement('div');
   hud.classList.add('hud');
 
@@ -15,11 +16,7 @@ export function createHud({ balance, loop }: HudOptions): HTMLElement {
   balanceEl.classList.add('hud-balance');
   balanceEl.textContent = formatMoney(balance);
 
-  const loopEl = document.createElement('span');
-  loopEl.classList.add('hud-loop');
-  loopEl.textContent = `loop ${loop} / ∞`;
-
-  hud.append(balanceEl, loopEl);
+  hud.append(balanceEl);
   return hud;
 }
 

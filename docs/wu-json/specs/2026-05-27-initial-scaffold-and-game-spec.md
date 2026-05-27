@@ -33,12 +33,12 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 
 Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow speaks with techno-optimist cadence ("we're so back", "generational", "the only ethical move").
 
-### Screen 1 — *The Grocery Store*
+### Screen 1 — *The Hat Shop*
 
-Setting: 2D storefront silhouette. Player-crow at a counter. Bread price tag: `$ 47`. HUD balance: `$ 12`.
+Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 47`. HUD balance: `$ 12`.
 
-- Tap to buy bread → `INSUFFICIENT FUNDS.` flash.
-- **Rich crow** enters from the right with a faint warm glow.
+- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
+- **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
 - *"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."*
 - One button: `[ accept ]`. There is no decline — the absent option *is* the satire.
 
@@ -71,9 +71,9 @@ Setting: black-on-black starfield (low-opacity white dots twinkling via opacity 
 - Rich crow: *"the under-crows can't follow us. new planet. we earned this."*
 - Tap to advance.
 
-### Screen 5 — *The Grocery Store (Again)*
+### Screen 5 — *The Hat Shop (Again)*
 
-Same layout as Screen 1, with bank balance and bread price both ~10× higher (relative gap unchanged or worse). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
+Same layout as Screen 1, with bank balance and hat price both ~10× higher (relative gap unchanged or worse — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
 
 ---
 
@@ -84,8 +84,9 @@ The numbers do the work. No per-loop visual decay — the rising prices alongsid
 | Element | Change per loop |
 |---|---|
 | Bank balance (start of loop) | × ~10 |
-| Bread price | × ~10 |
-| Loop counter in corner | `loop 1 / ∞`, `loop 2 / ∞`, … |
+| Hat price | × ~10 |
+
+The loop count is **not** displayed anywhere in the UI. The player should realize the recursion themselves from the climbing prices and the repeating script. Telling them "loop 2 / ∞" lets them off the hook — the discovery is the satire. `loop` is still tracked in state so `deriveLoopValues` can scale the numbers; it just never reaches the DOM.
 
 No stop condition. Closing the tab is the only exit — that's the joke.
 
@@ -187,7 +188,7 @@ interface GameState {
   screen: 0 | 1 | 2 | 3 | 4;     // 0=store, 1=factory, 2=couch, 3=ship, 4=store-again
   loop: number;                  // 1, 2, 3, …
   balance: number;               // pure function of loop
-  breadPrice: number;            // pure function of loop
+  hatPrice: number;              // pure function of loop
 }
 ```
 
@@ -237,7 +238,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - [x] **PR 0** — Spec
 - [x] **PR 1** — Scaffold
 - [x] **PR 2** — Shared primitives
-- [ ] **PR 3** — Screen 1: the grocery store
+- [ ] **PR 3** — Screen 1: the hat shop
 - [ ] **PR 4** — Screen 2: the factory
 - [ ] **PR 5** — Screen 3: the couch
 - [ ] **PR 6** — Screen 4: the spaceship
@@ -279,7 +280,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Goal:** visual + structural building blocks every screen reuses. No gameplay yet.
 - **Adds:**
   - [x] `src/crow.ts` — inline SVG for player crow (idle), rich crow (idle, wears top hat), background crow. `variant: "player" | "rich" | "background"` selects glow class and SVG.
-  - [x] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance + loop counter), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
+  - [x] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance only — loop count is intentionally hidden), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
   - [x] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
   - [x] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
   - [x] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-rich`, button base styles, `prefers-reduced-motion` overrides.
@@ -290,9 +291,9 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
   - [x] Bundle still under budget
 - **Dependencies:** PR 1.
 
-### PR 3 — Screen 1: the grocery store (`feat/screen-1-store`)
+### PR 3 — Screen 1: the hat shop (`feat/screen-1-store`)
 
-- **Goal:** first playable beat. Bread is too expensive, rich crow appears, single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
+- **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
 - **Adds:**
   - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 47`, HUD `$ 12`, player crow, rich crow entrance (CSS translate from off-right)
   - [ ] `INSUFFICIENT FUNDS.` flash on first tap
@@ -350,7 +351,6 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Adds:**
   - [ ] State: increment `loop` on screen-4 → screen-0 transition, persist via `saveLoop()`
   - [ ] `deriveLoopValues(loop)` returns ×10 balance/price, monotonically
-  - [ ] HUD loop counter (`loop 2 / ∞`)
   - [ ] Rich crow opening swaps to `"— again."` on loop ≥ 2
 - **Acceptance:**
   - [ ] Hard refresh mid-loop-3 returns to screen 1 of loop 3 (not loop 1)
