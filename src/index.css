@@ -319,22 +319,6 @@
   filter: drop-shadow(0 0 6px var(--color-glow-soft));
 }
 
-/* Hover/focus dims the hat — feedback that it's the click target.
- * Brightness on the span composes with the pulse, so the hat
- * still breathes, just darker. */
-@media (hover: hover) and (pointer: fine) {
-  .store-display:hover .store-hat {
-    filter: brightness(0.4);
-  }
-}
-
-.store-display:focus-visible .store-hat {
-  filter: brightness(0.55);
-}
-
-.store-display:active .store-hat {
-  filter: brightness(0.3);
-}
 
 .store-hat svg,
 .store-table svg {
@@ -393,9 +377,25 @@
 
 .insufficient-flash {
   position: absolute;
-  top: 20%;
+  top: 18%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  width: min(90%, 26rem);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.insufficient-flash.show {
+  opacity: 1;
+  animation: flash-in 380ms ease-out;
+}
+
+.insufficient-main {
   font-family: var(--font-pixel);
   font-size: 1.05rem;
   letter-spacing: 0.18em;
@@ -403,14 +403,21 @@
   text-shadow:
     0 0 8px var(--color-error-glow),
     0 0 18px var(--color-error-glow);
-  opacity: 0;
-  pointer-events: none;
   white-space: nowrap;
 }
 
-.insufficient-flash.show {
+.insufficient-sub {
+  font-family: var(--font-pixel);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  color: var(--color-ink);
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.insufficient-sub.shown {
   opacity: 1;
-  animation: flash-in 380ms ease-out;
 }
 
 @keyframes flash-in {

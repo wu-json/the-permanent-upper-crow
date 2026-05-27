@@ -15,6 +15,36 @@ const TABLE_SVG = `<svg viewBox="0 0 70 32" xmlns="http://www.w3.org/2000/svg" a
 
 const DIALOGUE = `"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."`;
 
+// Subtext that appears under INSUFFICIENT FUNDS once the player
+// has tapped the hat enough times to count as bargaining. Indexed
+// by (clickCount - HAT_CLICK_SUBTEXT_AT). Once the list is
+// exhausted, the last line sticks.
+const HAT_CLICK_SUBTEXT_AT = 6;
+const HAT_CLICK_SUBTEXT: readonly string[] = [
+  "you've already maxed out your crow card.",
+  'tapping it harder will not lower the price.',
+  'have you considered that you simply cannot afford this hat?',
+  'the hat does not feel sorry for you.',
+  'this is not a wishlist.',
+  'you cannot wing this purchase.',
+  'you could buy 0.1 of this hat. that is a brim.',
+  'even the table is judging you now.',
+  'have you considered onlybirds?',
+  "try marrying into the rich crow's family.",
+  'stream your tapping on twitch. ask for tips.',
+  'the fledgling support program is for actual fledglings.',
+  "you've been pecking at this for too long.",
+  "ruffled feathers won't budge the price.",
+  'no one is impressed by your persistence.',
+  'no girlfriend to even split the cost with.',
+  'the early bird gets the worm. the poor bird gets no bitches.',
+  'your nest worth will always be $1.',
+  'you have spent more energy tapping than the hat is worth.',
+  'you could have earned $1 in the time you spent doing this.',
+  'you are cuckoo to keep trying.',
+  'ok. fine. the hat is still $10. you still have $1.',
+];
+
 export const storeScreen: Screen = {
   mount(host, ctx) {
     const { balance, hatPrice } = deriveLoopValues(ctx.state.loop);
@@ -66,7 +96,11 @@ export const storeScreen: Screen = {
     const flash = document.createElement('div');
     flash.classList.add('insufficient-flash');
     flash.setAttribute('aria-live', 'polite');
-    flash.textContent = 'INSUFFICIENT FUNDS.';
+    flash.innerHTML = `
+      <div class="insufficient-main">INSUFFICIENT FUNDS.</div>
+      <div class="insufficient-sub"></div>
+    `;
+    const flashSub = flash.querySelector<HTMLDivElement>('.insufficient-sub')!;
 
     stage.append(playerCol, displayCol, richCol, flash);
 
@@ -98,13 +132,25 @@ export const storeScreen: Screen = {
     //               dialogue + [ accept ] cross-fade in,
     //               [ continue ] cross-fades out
     let beat: 0 | 1 | 2 = 0;
+    let hatClicks = 0;
 
     const onTapHat = () => {
+      hatClicks += 1;
+
       // Replay the entrance pulse on every tap; flash stays
       // visible once shown.
       flash.classList.remove('show');
       void flash.offsetWidth;
       flash.classList.add('show');
+
+      if (hatClicks >= HAT_CLICK_SUBTEXT_AT) {
+        const idx = Math.min(
+          hatClicks - HAT_CLICK_SUBTEXT_AT,
+          HAT_CLICK_SUBTEXT.length - 1,
+        );
+        flashSub.textContent = HAT_CLICK_SUBTEXT[idx];
+        flashSub.classList.add('shown');
+      }
 
       if (beat === 0) {
         beat = 1;
