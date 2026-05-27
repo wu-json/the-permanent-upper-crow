@@ -48,11 +48,21 @@ function makeRichDialogue({ name, company }: RichCast): readonly string[] {
   ];
 }
 
+// Spoken by the rich crow after the player signs the contract.
+// Same proper-sentence-case voice. Final tap advances to the
+// next screen.
+const POST_SIGN_DIALOGUE: readonly string[] = [
+  "Congratulations. I knew you weren't incompetent!",
+  'Cheers to a future of hard working fortune, and fortunate hard work.',
+  'See you in the office on Sunday my love.',
+];
+
 const STREAM_MS_PER_CHAR = 28;
 
 // First-person internal monologue surfaced when the player taps
 // [ decline ]. Each tap cycles to the next reminder of why the
-// player can't actually walk away. List sticks at the last line.
+// player can't actually walk away. List loops forever — there is
+// no version of saying no that ends.
 const DECLINE_THOUGHTS: readonly string[] = [
   'rent is due next month.',
   'the perch payments are three months behind.',
@@ -231,7 +241,7 @@ export const storeScreen: Screen = {
     const contractActions = document.createElement('div');
     contractActions.classList.add('contract-actions');
     const decline = createPrimaryButton('decline', () => onTapDecline());
-    const accept = createPrimaryButton('sign', () => ctx.advance());
+    const accept = createPrimaryButton('sign', () => onTapSign());
     contractActions.append(decline, accept);
 
     const contractThought = document.createElement('div');
@@ -246,17 +256,24 @@ export const storeScreen: Screen = {
     // Cascade
     //   beat 0 → 1: tap hat → flash + dim hat + show [ continue ]
     //   beat 1 → 2: tap continue → rich crow slides in, dialogue
-    //               box fades in and starts streaming
-    //   beat 2 → 3: last dialogue line finishes → contract popup
-    //               fades in with [ decline ] / [ accept ] inside;
-    //               dialogue stops accepting taps
+    //               box fades in and starts streaming the pitch
+    //   beat 2 → 3: tap past last pitch line → contract popup
+    //   beat 3 → 2: tap sign → contract dismissed, dialogue box
+    //               re-enabled, post-sign lines start streaming
+    //   beat 2 → 4: tap past last post-sign line → ctx.advance()
     let beat: 0 | 1 | 2 | 3 = 0;
     let hatClicks = 0;
     let declineClicks = 0;
 
+    // The dialogue box drives two different scripts: the rich
+    // crow's pitch (pre-sign) and his celebratory follow-up
+    // (post-sign). `activeLines` swaps when [ sign ] is tapped.
+    let activeLines: readonly string[] = richLines;
+    let signed = false;
+
     const onTapDecline = () => {
       declineClicks += 1;
-      const idx = Math.min(declineClicks - 1, DECLINE_THOUGHTS.length - 1);
+      const idx = (declineClicks - 1) % DECLINE_THOUGHTS.length;
       contractThought.textContent = DECLINE_THOUGHTS[idx];
       contractThought.classList.add('shown');
     };
@@ -307,7 +324,7 @@ export const storeScreen: Screen = {
       dlgIndicator.classList.remove('shown');
       dlgText.textContent = '';
       dlgCharIdx = 0;
-      const line = richLines[dlgLineIdx];
+      const line = activeLines[dlgLineIdx];
 
       const tick = () => {
         if (dlgCharIdx >= line.length) {
@@ -326,8 +343,8 @@ export const storeScreen: Screen = {
         window.clearTimeout(streamTimer);
         streamTimer = null;
       }
-      dlgText.textContent = richLines[dlgLineIdx];
-      dlgCharIdx = richLines[dlgLineIdx].length;
+      dlgText.textContent = activeLines[dlgLineIdx];
+      dlgCharIdx = activeLines[dlgLineIdx].length;
       onLineComplete();
     };
 
@@ -335,16 +352,38 @@ export const storeScreen: Screen = {
       if (beat !== 2) return;
       if (streaming) {
         finishLine();
-      } else if (dlgLineIdx < richLines.length - 1) {
+      } else if (dlgLineIdx < activeLines.length - 1) {
         dlgLineIdx += 1;
         streamLine();
-      } else {
-        // Past the last line — one more tap reveals the contract.
+      } else if (!signed) {
+        // Past the last pitch line — one more tap reveals the
+        // contract.
         beat = 3;
         dialogueBox.classList.add('done');
         dlgIndicator.classList.remove('shown');
         contract.classList.add('shown');
+      } else {
+        // Past the last post-sign line — advance to the next
+        // screen.
+        ctx.advance();
       }
+    };
+
+    const onTapSign = () => {
+      if (beat !== 3) return;
+      signed = true;
+      // Dismiss the contract, swap the dialogue script, re-enable
+      // dialogue taps, and start streaming after a brief beat so
+      // the contract has time to fade out cleanly.
+      contract.classList.remove('shown');
+      activeLines = POST_SIGN_DIALOGUE;
+      dlgLineIdx = 0;
+      dialogueBox.classList.remove('done');
+      beat = 2;
+      startDelayTimer = window.setTimeout(() => {
+        startDelayTimer = null;
+        streamLine();
+      }, 450);
     };
 
     const onTapContinue = () => {
