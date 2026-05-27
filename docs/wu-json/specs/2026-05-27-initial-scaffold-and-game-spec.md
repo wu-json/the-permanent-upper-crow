@@ -1,5 +1,5 @@
 ---
-status: draft
+status: ready
 ---
 
 # Permanent Upper-Crow — Initial Scaffold & Game Spec
@@ -234,8 +234,8 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 ### Top-line PR tracker
 
-- [ ] **PR 0** — Spec
-- [ ] **PR 1** — Scaffold
+- [x] **PR 0** — Spec
+- [x] **PR 1** — Scaffold
 - [ ] **PR 2** — Shared primitives
 - [ ] **PR 3** — Screen 1: the grocery store
 - [ ] **PR 4** — Screen 2: the factory
@@ -251,27 +251,27 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** land this spec doc, no code.
 - **Files:**
-  - [ ] `docs/wu-json/specs/2026-05-27-initial-scaffold-and-game-spec.md`
+  - [x] `docs/wu-json/specs/2026-05-27-initial-scaffold-and-game-spec.md`
 - **Acceptance:**
-  - [ ] Spec reviewed
-  - [ ] `status:` flipped from `draft` → `ready` before PR 1 starts
+  - [x] Spec reviewed
+  - [x] `status:` flipped from `draft` → `ready` before PR 1 starts
 
 ### PR 1 — Scaffold (`feat/scaffold-vite-vanilla-ts`)
 
 - **Goal:** Vite + vanilla TS + Tailwind v4 deployed to Vercel as a black screen.
 - **Adds:**
-  - [ ] `package.json`, `tsconfig.json`, `vite.config.ts`, `vercel.json`
-  - [ ] `index.html` with `<html data-theme="dark">`, viewport-fit meta, `<div id="app">`, `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`, DotGothic16 Google Fonts `<link>` with `font-display: swap`
-  - [ ] `src/main.ts` — mounts to `#app`, renders centered `permanent upper-crow` title in DotGothic16 (system mono during swap) using palette tokens
-  - [ ] `src/index.css` — full palette block, Tailwind v4 setup, `--font-pixel` token, `@layer base` body styles (black surface, white ink) ported from `personal-website`
-  - [ ] `public/favicon.svg` (minimal white crow silhouette)
-  - [ ] `.gitignore`, `README.md` (one paragraph, links to this spec)
+  - [x] `package.json`, `tsconfig.json`, `vite.config.ts`, `vercel.json`
+  - [x] `index.html` with `<html data-theme="dark">`, viewport-fit meta, `<div id="app">`, `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`, DotGothic16 Google Fonts `<link>` with `font-display: swap`
+  - [x] `src/main.ts` — mounts to `#app`, renders centered `permanent upper-crow` title in DotGothic16 (system mono during swap) using palette tokens
+  - [x] `src/index.css` — full palette block, Tailwind v4 setup, `--font-pixel` token, `@layer base` body styles (black surface, white ink) ported from `personal-website`
+  - [x] `public/favicon.svg` (minimal white crow silhouette)
+  - [x] `.gitignore`, `README.md` (one paragraph, links to this spec)
 - **Acceptance:**
-  - [ ] `bun install && bun run dev` boots the black page with the title
-  - [ ] `bun run build` produces `dist/` ≤ 15 KB gzipped (font excluded; it's third-party)
-  - [ ] Title renders in DotGothic16 after swap; system mono visible during swap (no FOIT)
+  - [x] `bun install && bun run dev` boots the black page with the title
+  - [x] `bun run build` produces `dist/` ≤ 15 KB gzipped (font excluded; it's third-party)
+  - [x] Title renders in DotGothic16 after swap; system mono visible during swap (no FOIT)
   - [ ] Deployed to Vercel, renders on iOS Safari + Chrome desktop
-  - [ ] No React, no router, no runtime deps beyond TS
+  - [x] No React, no router, no runtime deps beyond TS
 - **Dependencies:** none.
 
 ### PR 2 — Shared primitives (`feat/crow-svg-and-primitives`)

@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+[data-theme='dark'] {
+  --color-surface: #000000;
+  --color-ink: #ffffff;
+  --color-ink-soft: rgba(255, 255, 255, 0.7);
+  --color-ink-muted: rgba(255, 255, 255, 0.5);
+  --color-ink-faint: rgba(255, 255, 255, 0.3);
+  --color-ink-ghost: rgba(255, 255, 255, 0.2);
+  --color-ink-trace: rgba(255, 255, 255, 0.1);
+  --color-ink-hair: rgba(255, 255, 255, 0.05);
+  --color-glow-strong: rgba(255, 255, 255, 0.6);
+  --color-glow: rgba(255, 255, 255, 0.3);
+  --color-glow-soft: rgba(255, 255, 255, 0.2);
+  --color-glow-mist: rgba(255, 255, 255, 0.08);
+}
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-pixel:
+    'DotGothic16', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+}
+
+@layer base {
+  html,
+  body {
+    @apply h-full w-full m-0 p-0 font-sans;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  #app {
+    @apply h-full w-full;
+  }
+}
+
+::selection {
+  background-color: var(--color-ink);
+  color: var(--color-surface);
+}
