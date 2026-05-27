@@ -178,39 +178,75 @@ export const storeScreen: Screen = {
     dlgBody.append(dlgText, dlgIndicator);
     dialogueBox.append(dlgSpeaker, dlgBody);
 
-    // CTA wrap holds [ continue ] (beat 1) and the
-    // [ decline ] · [ accept ] pair (beat 3) stacked absolutely;
-    // each .reveal'd element cross-fades in on its beat without
-    // a layout jump. A muted "thought" line lives below the pair
-    // and surfaces a different excuse on every [ decline ] tap.
+    // CTA wrap only holds [ continue ] now — decline/accept moved
+    // into the contract popup that appears after the dialogue.
     const cta = document.createElement('div');
     cta.classList.add('cta-wrap');
 
     const continueBtn = createPrimaryButton('continue', () => onTapContinue());
     continueBtn.classList.add('reveal');
 
-    const ctaPair = document.createElement('div');
-    ctaPair.classList.add('cta-pair', 'reveal');
+    cta.append(continueBtn);
 
+    // Contract popup — modal overlay revealed after Benjamin
+    // Peck's last line. Decline / accept live inside the card,
+    // and the decline-thought subtext sits below the buttons.
+    const contract = document.createElement('div');
+    contract.classList.add('contract-overlay', 'reveal');
+    contract.setAttribute('role', 'dialog');
+    contract.setAttribute('aria-modal', 'true');
+    contract.setAttribute('aria-labelledby', 'contract-title');
+    contract.innerHTML = `
+      <div class="contract-card">
+        <div class="contract-header">
+          <div class="contract-eyebrow">EMPLOYMENT AGREEMENT</div>
+          <div class="contract-title" id="contract-title">${cast.company}</div>
+        </div>
+        <div class="contract-body">
+          <p>The undersigned ("Employee") agrees to the following terms with ${cast.company} (the "Company"):</p>
+          <ol class="contract-terms">
+            <li>Dedicate all labor, judgment, and waking hours to the development of Robo-Crow.</li>
+            <li>Acknowledge that the window is closing.</li>
+            <li>Accept equity in the Company, which the Company affirms is anything but abundant.</li>
+            <li>Forfeit the right to wonder if there was another way.</li>
+          </ol>
+          <div class="contract-signatures">
+            <div class="contract-sig">
+              <div class="contract-sig-line"></div>
+              <div class="contract-sig-label">Employee</div>
+            </div>
+            <div class="contract-sig">
+              <div class="contract-sig-line"></div>
+              <div class="contract-sig-label">${cast.name}, Founder &amp; CEO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const contractCard = contract.querySelector<HTMLDivElement>('.contract-card')!;
+
+    const contractActions = document.createElement('div');
+    contractActions.classList.add('contract-actions');
     const decline = createPrimaryButton('decline', () => onTapDecline());
     const accept = createPrimaryButton('accept', () => ctx.advance());
-    ctaPair.append(decline, accept);
+    contractActions.append(decline, accept);
 
-    const thought = document.createElement('div');
-    thought.classList.add('cta-thought');
-    thought.setAttribute('aria-live', 'polite');
+    const contractThought = document.createElement('div');
+    contractThought.classList.add('contract-thought');
+    contractThought.setAttribute('aria-live', 'polite');
 
-    cta.append(continueBtn, ctaPair, thought);
+    contractCard.append(contractActions, contractThought);
 
-    root.append(hudWrap, stage, dialogueBox, cta);
+    root.append(hudWrap, stage, dialogueBox, cta, contract);
     host.appendChild(root);
 
     // Cascade
     //   beat 0 → 1: tap hat → flash + dim hat + show [ continue ]
     //   beat 1 → 2: tap continue → rich crow slides in, dialogue
     //               box fades in and starts streaming
-    //   beat 2 → 3: last dialogue line finishes → the
-    //               [ decline ] · [ accept ] pair cross-fades in;
+    //   beat 2 → 3: last dialogue line finishes → contract popup
+    //               fades in with [ decline ] / [ accept ] inside;
     //               dialogue stops accepting taps
     let beat: 0 | 1 | 2 | 3 = 0;
     let hatClicks = 0;
@@ -219,8 +255,8 @@ export const storeScreen: Screen = {
     const onTapDecline = () => {
       declineClicks += 1;
       const idx = Math.min(declineClicks - 1, DECLINE_THOUGHTS.length - 1);
-      thought.textContent = DECLINE_THOUGHTS[idx];
-      thought.classList.add('shown');
+      contractThought.textContent = DECLINE_THOUGHTS[idx];
+      contractThought.classList.add('shown');
     };
 
     const onTapHat = () => {
@@ -263,11 +299,11 @@ export const storeScreen: Screen = {
         dlgIndicator.classList.add('shown');
       } else {
         // Final line — dialogue is done. Hide indicator, reveal
-        // the decline · accept pair, stop accepting taps.
+        // the contract popup, stop accepting dialogue taps.
         beat = 3;
         dialogueBox.classList.add('done');
         dlgIndicator.classList.remove('shown');
-        ctaPair.classList.add('shown');
+        contract.classList.add('shown');
       }
     };
 

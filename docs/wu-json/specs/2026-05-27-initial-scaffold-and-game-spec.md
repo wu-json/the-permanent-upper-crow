@@ -46,7 +46,7 @@ Setting: player-crow next to a display table. Top hat sits on the table (same ha
   - *"At ${company}, we produce the Robo-Crow. It is an autonomous robot that automates all labor in the e-kaw-nomy."*
   - *"You must decide soon. We are running out of time before you become stuck with the under-crows."*
   - *"Equity in our venerable operation is anything but abundant."*
-- After the last line, `[ decline ]` and `[ accept ]` cross-fade in side-by-side. `[ decline ]` is a fake exit: each tap surfaces a different first-person reminder under the buttons (`"rent is due next month."`, `"mama crow is in the hospital remember."`, `"i told my sister i would help pay for her kaw school fees."`, etc., ~10 lines, sticks at the last). The performative refusal *is* the satire — you can perform declining indefinitely; nothing advances until you accept.
+- After the last line, an **Employment Agreement popup** fades in over the scene (modal with a dimmed backdrop). The card carries the current loop's company name (`Crow Automation Systems`, `Caw Labs`, etc.), a short numbered set of legalese terms ("Dedicate all labor, judgment, and waking hours to the development of Robo-Crow.", "Forfeit the right to wonder if there was another way."), two signature lines (Employee · ${name}, Founder & CEO), and `[ decline ]` / `[ accept ]` at the bottom. `[ decline ]` is a fake exit: each tap surfaces a different first-person reminder under the buttons (`"rent is due next month."`, `"mama crow is in the hospital remember."`, etc., ~10 lines, sticks at the last). Only `[ accept ]` actually signs the contract and advances. The performative refusal *is* the satire — you can perform declining indefinitely; nothing advances until you accept.
 
 ### Screen 2 — *The Factory*
 
@@ -306,7 +306,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Adds:**
   - [x] `src/screens/store.ts` — hat-on-table display with `TOP HAT FOR SALE: $ 10` placard, HUD `NEST WORTH: $ 1`, player crow, rich crow entrance (CSS translate from off-right). No skip button on this screen.
   - [x] `INSUFFICIENT FUNDS.` flash on first tap
-  - [x] Streaming Animal-Crossing-style dialogue box with speaker label; `[ decline ]` and `[ accept ]` pair beneath after the last line — decline cycles internal-monologue excuses but never advances
+  - [x] Streaming Animal-Crossing-style dialogue box with speaker label; **Employment Agreement popup** appears after the last line with `[ decline ]` / `[ accept ]` inside — decline cycles internal-monologue excuses but never advances
   - [x] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
   - [x] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
 - **Acceptance:**
