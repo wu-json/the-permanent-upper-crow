@@ -48,7 +48,7 @@ Object.assign(crows.style, {
 crows.append(
   createCrow('background'),
   createCrow('player'),
-  createCrow('golden'),
+  createCrow('rich'),
 );
 
 const buttons = document.createElement('div');
