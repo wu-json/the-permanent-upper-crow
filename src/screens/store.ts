@@ -70,40 +70,59 @@ export const storeScreen: Screen = {
 
     stage.append(playerCol, displayCol, richCol, flash);
 
-    // Dialogue + accept (hidden until first hat tap)
+    // Dialogue (revealed in beat 2)
     const dialogue = document.createElement('p');
     dialogue.classList.add('dialogue', 'reveal');
     dialogue.textContent = DIALOGUE;
 
+    // CTA wrap holds both [ continue ] and [ accept ] stacked
+    // absolutely; only one is .shown at a time so the swap
+    // cross-fades without a layout jump.
+    const cta = document.createElement('div');
+    cta.classList.add('cta-wrap');
+
+    const continueBtn = createPrimaryButton('continue', () => onTapContinue());
+    continueBtn.classList.add('reveal');
+
     const accept = createPrimaryButton('accept', () => ctx.advance());
     accept.classList.add('reveal');
 
-    const acceptWrap = document.createElement('div');
-    acceptWrap.classList.add('accept-wrap');
-    acceptWrap.appendChild(accept);
+    cta.append(continueBtn, accept);
 
-    root.append(hudWrap, stage, dialogue, acceptWrap);
+    root.append(hudWrap, stage, dialogue, cta);
     host.appendChild(root);
 
-    // Tap-gated cascade
-    let revealed = false;
+    // Two-beat cascade
+    //   beat 0 → 1: tap hat → flash + dim hat + show [ continue ]
+    //   beat 1 → 2: tap continue → rich crow slides in,
+    //               dialogue + [ accept ] cross-fade in,
+    //               [ continue ] cross-fades out
+    let beat: 0 | 1 | 2 = 0;
+
     const onTapHat = () => {
-      // Replay the entrance pulse on every tap, but the flash
-      // itself stays visible once shown.
+      // Replay the entrance pulse on every tap; flash stays
+      // visible once shown.
       flash.classList.remove('show');
-      // Force reflow so the animation restarts.
       void flash.offsetWidth;
       flash.classList.add('show');
 
-      if (!revealed) {
-        revealed = true;
-        stage.classList.add('rich-entered');
+      if (beat === 0) {
+        beat = 1;
         sign.classList.add('hint-consumed');
         displayCol.classList.add('revealed');
-        dialogue.classList.add('shown');
-        accept.classList.add('shown');
+        continueBtn.classList.add('shown');
       }
     };
+
+    const onTapContinue = () => {
+      if (beat !== 1) return;
+      beat = 2;
+      stage.classList.add('rich-entered');
+      continueBtn.classList.remove('shown');
+      dialogue.classList.add('shown');
+      accept.classList.add('shown');
+    };
+
     display.addEventListener('click', onTapHat);
 
     return () => {
