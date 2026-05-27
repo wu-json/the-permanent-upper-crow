@@ -52,7 +52,7 @@ function makeRichDialogue({ name, company }: RichCast): readonly string[] {
 // Same proper-sentence-case voice. Final tap advances to the
 // next screen.
 const POST_SIGN_DIALOGUE: readonly string[] = [
-  "Congratulations. I knew you weren't incompetent!",
+  "Congratulations! I knew you weren't incompetent!",
   'Cheers to a future of hard working fortune, and fortunate hard work.',
   'See you in the office on Sunday my love.',
 ];
