@@ -29,7 +29,6 @@ const HAT_CLICK_SUBTEXT: readonly string[] = [
   'you cannot wing this purchase.',
   'you could buy 0.1 of this hat. that is a brim.',
   'even the table is judging you now.',
-  'have you considered onlybirds?',
   "try marrying into the rich crow's family.",
   'stream your tapping on twitch. ask for tips.',
   'the fledgling support program is for actual fledglings.',
@@ -37,12 +36,10 @@ const HAT_CLICK_SUBTEXT: readonly string[] = [
   "ruffled feathers won't budge the price.",
   'no one is impressed by your persistence.',
   'no girlfriend to even split the cost with.',
-  'the early bird gets the worm. the poor bird gets no bitches.',
+  'your broke ass gets no finches.',
   'your nest worth will always be $1.',
-  'you have spent more energy tapping than the hat is worth.',
-  'you could have earned $1 in the time you spent doing this.',
   'you are cuckoo to keep trying.',
-  'ok. fine. the hat is still $10. you still have $1.',
+  'have you considered onlybirds?',
 ];
 
 export const storeScreen: Screen = {
