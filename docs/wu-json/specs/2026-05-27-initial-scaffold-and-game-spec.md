@@ -236,7 +236,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - [x] **PR 0** — Spec
 - [x] **PR 1** — Scaffold
-- [ ] **PR 2** — Shared primitives
+- [x] **PR 2** — Shared primitives
 - [ ] **PR 3** — Screen 1: the grocery store
 - [ ] **PR 4** — Screen 2: the factory
 - [ ] **PR 5** — Screen 3: the couch
@@ -278,16 +278,16 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** visual + structural building blocks every screen reuses. No gameplay yet.
 - **Adds:**
-  - [ ] `src/crow.ts` — inline SVG for player crow (idle), golden crow (idle), background crow. `variant: "player" | "golden" | "background"` selects glow class.
-  - [ ] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance + loop counter), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
-  - [ ] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
-  - [ ] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
-  - [ ] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-golden`, button base styles, `prefers-reduced-motion` overrides.
-  - [ ] Throwaway dev-only "kitchen sink" route in `main.ts` — renders all three crow variants + HUD + button. Deleted in PR 3.
+  - [x] `src/crow.ts` — inline SVG for player crow (idle), golden crow (idle), background crow. `variant: "player" | "golden" | "background"` selects glow class.
+  - [x] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance + loop counter), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
+  - [x] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
+  - [x] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
+  - [x] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-golden`, button base styles, `prefers-reduced-motion` overrides.
+  - [x] Throwaway dev-only "kitchen sink" route in `main.ts` — renders all three crow variants + HUD + button. Deleted in PR 3.
 - **Acceptance:**
-  - [ ] Kitchen-sink page shows three crows side-by-side, player + golden glowing, background flat
-  - [ ] Reduced-motion: halo holds steady, doesn't pulse
-  - [ ] Bundle still under budget
+  - [x] Kitchen-sink page shows three crows side-by-side, player + golden glowing, background flat
+  - [x] Reduced-motion: halo holds steady, doesn't pulse
+  - [x] Bundle still under budget
 - **Dependencies:** PR 1.
 
 ### PR 3 — Screen 1: the grocery store (`feat/screen-1-store`)
