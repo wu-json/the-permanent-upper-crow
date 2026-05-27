@@ -209,6 +209,15 @@ interface GameState {
 
 Only `loop` needs persisting; balance and price derive from it.
 
+### Dev affordances
+
+`main.ts` reads URL query params on load so you can jump straight into a screen without playing through:
+
+- `?screen=<0..3 | store | factory | couch | ship>` — mount that screen as the entry point
+- `?loop=<n>` — start at a specific loop (drives the rich-crow cast rotation and the ×100 number scaling, useful for testing later loops without grinding)
+
+Both are no-ops if absent; harmless to leave shipped in production.
+
 ### Bundle budget
 
 | Concern | Target |
