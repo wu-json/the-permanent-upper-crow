@@ -17,7 +17,7 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 - **Mobile-first.** Touch input, single-column portrait, runs on a mid-range phone over 3G. Viewport-fit for safe areas.
 - **Visually coherent with `~/GitHub/personal/personal-website` dark mode.** Pure-black surface, white ink with opacity ramps, subtle glow via `drop-shadow` / `text-shadow`, pixel-font headings. Restrained motion.
 - **3–5 minutes per first loop, faster after.** Point lands by loop 2 or 3.
-- **Loops forever; *feels* escalating.** No length cap — the ×10 prices and balance climbing each loop are what make the player stop.
+- **Loops forever; *feels* escalating.** No length cap — the ×100 prices and balance climbing each loop are what make the player stop.
 
 ## Non-goals
 
@@ -35,7 +35,7 @@ Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The
 
 ### Screen 1 — *The Hat Shop*
 
-Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 47`. HUD balance: `$ 12`.
+Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 10`. HUD balance: `$ 1`.
 
 - Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
 - **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
@@ -59,7 +59,7 @@ Setting: player-crow on a couch in front of a TV. Chyron cycles, pixel font, all
 - `ROBO-CROW Q3 EARNINGS BEAT`
 - `FOOD PRICES UP 312% Y/Y`
 
-HUD has jumped (e.g. `$ 41,200`).
+HUD has jumped (e.g. `$ 100` — the next loop's starting balance).
 
 - Tap to advance. No dialogue.
 - Faint footnote in `--color-ink-faint`: *"the chyron loops."*
@@ -73,7 +73,7 @@ Setting: black-on-black starfield (low-opacity white dots twinkling via opacity 
 
 ### Screen 5 — *The Hat Shop (Again)*
 
-Same layout as Screen 1, with bank balance and hat price both ~10× higher (relative gap unchanged or worse — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
+Same layout as Screen 1, with bank balance and hat price both 100× higher (relative gap unchanged — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
 
 ---
 
@@ -83,8 +83,10 @@ The numbers do the work. No per-loop visual decay — the rising prices alongsid
 
 | Element | Change per loop |
 |---|---|
-| Bank balance (start of loop) | × ~10 |
-| Hat price | × ~10 |
+| Bank balance (start of loop) | × 100 |
+| Hat price | × 100 |
+
+Loop 1: balance `$ 1`, hat `$ 10`. Loop 2: `$ 100` / `$ 1,000`. Loop 3: `$ 10,000` / `$ 100,000`. The couch (Screen 3) shows next-loop's start balance as the post-launch HUD.
 
 The loop count is **not** displayed anywhere in the UI. The player should realize the recursion themselves from the climbing prices and the repeating script. Telling them "loop 2 / ∞" lets them off the hook — the discovery is the satire. `loop` is still tracked in state so `deriveLoopValues` can scale the numbers; it just never reaches the DOM.
 
@@ -296,7 +298,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
 - **Adds:**
-  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 47`, HUD `$ 12`, player crow, rich crow entrance (CSS translate from off-right)
+  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 10`, HUD `$ 1`, player crow, rich crow entrance (CSS translate from off-right)
   - [ ] `INSUFFICIENT FUNDS.` flash on first tap
   - [ ] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
   - [ ] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
@@ -326,7 +328,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Adds:**
   - [ ] `src/screens/couch.ts` — couch silhouette, TV silhouette with text region
   - [ ] Chyron cycler — array of 4 strings in pixel font, swapped every ~1.8 s via `setInterval`, cleared on cleanup. No animation library.
-  - [ ] HUD shows post-launch balance (`$ 41,200`) from `deriveLoopValues(1)` for loop 1
+  - [ ] HUD shows post-launch balance (`$ 100`) from `deriveLoopValues(loop + 1).balance` for loop 1
   - [ ] Faint footnote: *"the chyron loops."*
 - **Acceptance:**
   - [ ] Cleanup clears the interval (unmount + remount doesn't leak)
@@ -351,7 +353,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Goal:** make the recursion real. Screen 4 advances back into the store with bumped numbers and visible escalation. This is where the satire lands.
 - **Adds:**
   - [ ] State: increment `loop` on screen-4 → screen-0 transition, persist via `saveLoop()`
-  - [ ] `deriveLoopValues(loop)` returns ×10 balance/price, monotonically
+  - [ ] `deriveLoopValues(loop)` returns ×100 balance/price, monotonically
   - [ ] Rich crow opening swaps to `"— again."` on loop ≥ 2
 - **Acceptance:**
   - [ ] Hard refresh mid-loop-3 returns to screen 1 of loop 3 (not loop 1)
