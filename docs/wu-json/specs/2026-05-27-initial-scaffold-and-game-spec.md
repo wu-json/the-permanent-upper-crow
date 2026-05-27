@@ -119,6 +119,7 @@ No light-mode toggle — the satire reads darker in dark.
 
 - **Player crow:** simple cute 2D silhouette, solid white. Halo `drop-shadow(0 0 8px var(--color-glow-soft))` + outer breath `drop-shadow(0 0 25px var(--color-glow-mist))`. 7s ease-in-out infinite filter cycle ported from personal-website's `lily-breathe`, renamed `crow-breathe`.
 - **Rich crow:** same body silhouette, white fill, **wearing a stovepipe top hat** (crown + wider brim) integrated into the path. Same cool white glow as the player — character is what marks him as the rich crow, not color. The hat is the visual punchline; "golden" was the earlier design and got replaced by the hat because a single accessory reads as wealth more immediately than a tint.
+- **Robo-Crow:** the factory output. Same body silhouette + two small antennas integrated into the path top, and the eye is a **square hole** instead of a round one — reads as "screen / visor" → robot at a glance. No glow. Used on the factory conveyor (Screen 2) at `--color-ink-faint` and possibly elsewhere as a product reference.
 - **Background / under-crows:** flat fills at `--color-ink-faint`. No glow, no animation.
 
 All crow art ships as **inline SVG** in the bundle. One shared path per pose (idle, tap-bounce, ship-it) — 4–6 paths total. No raster, no sprite sheet.
@@ -279,14 +280,14 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** visual + structural building blocks every screen reuses. No gameplay yet.
 - **Adds:**
-  - [x] `src/crow.ts` — inline SVG for player crow (idle), rich crow (idle, wears top hat), background crow. `variant: "player" | "rich" | "background"` selects glow class and SVG.
+  - [x] `src/crow.ts` — inline SVG for player crow (idle), rich crow (idle, wears top hat), robo-crow (square eye + antennas), background crow. `variant: "player" | "rich" | "background" | "robo"` selects glow class and SVG.
   - [x] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance only — loop count is intentionally hidden), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
   - [x] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
   - [x] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
   - [x] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-rich`, button base styles, `prefers-reduced-motion` overrides.
   - [x] Throwaway dev-only "kitchen sink" route in `main.ts` — renders all three crow variants + HUD + button. Deleted in PR 3.
 - **Acceptance:**
-  - [x] Kitchen-sink page shows three crows side-by-side, player + rich (with top hat) glowing, background flat
+  - [x] Kitchen-sink page shows all four crows side-by-side, player + rich (with top hat) glowing, robo (square eye + antennas) and background flat
   - [x] Reduced-motion: halo holds steady, doesn't pulse
   - [x] Bundle still under budget
 - **Dependencies:** PR 1.

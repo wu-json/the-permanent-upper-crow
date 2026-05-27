@@ -59,6 +59,10 @@
   color: var(--color-ink-faint);
 }
 
+.crow-robo {
+  color: var(--color-ink);
+}
+
 @keyframes crow-breathe {
   0%,
   100% {

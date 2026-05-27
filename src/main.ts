@@ -49,6 +49,7 @@ crows.append(
   createCrow('background'),
   createCrow('player'),
   createCrow('rich'),
+  createCrow('robo'),
 );
 
 const buttons = document.createElement('div');
