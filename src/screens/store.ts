@@ -297,16 +297,9 @@ export const storeScreen: Screen = {
     const onLineComplete = () => {
       streaming = false;
       streamTimer = null;
-      if (dlgLineIdx < richLines.length - 1) {
-        dlgIndicator.classList.add('shown');
-      } else {
-        // Final line — dialogue is done. Hide indicator, reveal
-        // the contract popup, stop accepting dialogue taps.
-        beat = 3;
-        dialogueBox.classList.add('done');
-        dlgIndicator.classList.remove('shown');
-        contract.classList.add('shown');
-      }
+      // Indicator stays up after every line, including the last —
+      // tapping past the last line is what reveals the contract.
+      dlgIndicator.classList.add('shown');
     };
 
     const streamLine = () => {
@@ -345,6 +338,12 @@ export const storeScreen: Screen = {
       } else if (dlgLineIdx < richLines.length - 1) {
         dlgLineIdx += 1;
         streamLine();
+      } else {
+        // Past the last line — one more tap reveals the contract.
+        beat = 3;
+        dialogueBox.classList.add('done');
+        dlgIndicator.classList.remove('shown');
+        contract.classList.add('shown');
       }
     };
 
