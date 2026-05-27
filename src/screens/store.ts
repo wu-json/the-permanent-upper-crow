@@ -43,7 +43,7 @@ function makeRichDialogue({ name, company }: RichCast): readonly string[] {
     "It seems you're having... some trouble with that purchase.",
     'What if I told you you could earn generational wealth with just a few years of hard work?',
     `At ${company}, we produce the Robo-Crow. It is an autonomous robot that automates all labor in the e-kaw-nomy.`,
-    'You must decide soon. We are running out of time before you become stuck with the under-crows.',
+    'You would be wise to decide soon. We are running out of time before you become stuck with the under-crows.',
     'Equity in our venerable operation is anything but abundant.',
   ];
 }
