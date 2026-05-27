@@ -31,23 +31,23 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 
 ## Story (canonical script)
 
-Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The golden crow speaks with techno-optimist cadence ("we're so back", "generational", "the only ethical move").
+Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow speaks with techno-optimist cadence ("we're so back", "generational", "the only ethical move").
 
-### Screen 1 — *The Grocery Store*
+### Screen 1 — *The Hat Shop*
 
-Setting: 2D storefront silhouette. Player-crow at a counter. Bread price tag: `$ 47`. HUD balance: `$ 12`.
+Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 47`. HUD balance: `$ 12`.
 
-- Tap to buy bread → `INSUFFICIENT FUNDS.` flash.
-- **Golden crow** enters from the right with a faint warm glow.
+- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
+- **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
 - *"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."*
 - One button: `[ accept ]`. There is no decline — the absent option *is* the satire.
 
 ### Screen 2 — *The Factory*
 
-Setting: rows of small dark crow silhouettes on a conveyor. Player-crow at a console. Golden crow at the frame's edge.
+Setting: rows of small dark crow silhouettes on a conveyor. Player-crow at a console. Rich crow at the frame's edge.
 
 - Tap `[ ship it ]` → conveyor animates (CSS transform only).
-- Golden crow: *"clean launch. we're so back. let's take it public."*
+- Rich crow: *"clean launch. we're so back. let's take it public."*
 - Auto-advance after a short beat. `[ skip ]` is available bottom-right on every story screen.
 
 ### Screen 3 — *The Couch*
@@ -68,12 +68,12 @@ HUD has jumped (e.g. `$ 41,200`).
 
 Setting: black-on-black starfield (low-opacity white dots twinkling via opacity keyframes). Spaceship silhouette foreground. Tiny crow silhouettes filing in.
 
-- Golden crow: *"the under-crows can't follow us. new planet. we earned this."*
+- Rich crow: *"the under-crows can't follow us. new planet. we earned this."*
 - Tap to advance.
 
-### Screen 5 — *The Grocery Store (Again)*
+### Screen 5 — *The Hat Shop (Again)*
 
-Same layout as Screen 1, with bank balance and bread price both ~10× higher (relative gap unchanged or worse). Tapping advance re-enters Screen 1 of the next loop. Golden crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
+Same layout as Screen 1, with bank balance and hat price both ~10× higher (relative gap unchanged or worse — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
 
 ---
 
@@ -84,8 +84,9 @@ The numbers do the work. No per-loop visual decay — the rising prices alongsid
 | Element | Change per loop |
 |---|---|
 | Bank balance (start of loop) | × ~10 |
-| Bread price | × ~10 |
-| Loop counter in corner | `loop 1 / ∞`, `loop 2 / ∞`, … |
+| Hat price | × ~10 |
+
+The loop count is **not** displayed anywhere in the UI. The player should realize the recursion themselves from the climbing prices and the repeating script. Telling them "loop 2 / ∞" lets them off the hook — the discovery is the satire. `loop` is still tracked in state so `deriveLoopValues` can scale the numbers; it just never reaches the DOM.
 
 No stop condition. Closing the tab is the only exit — that's the joke.
 
@@ -117,7 +118,8 @@ No light-mode toggle — the satire reads darker in dark.
 ### Crow design
 
 - **Player crow:** simple cute 2D silhouette, solid white. Halo `drop-shadow(0 0 8px var(--color-glow-soft))` + outer breath `drop-shadow(0 0 25px var(--color-glow-mist))`. 7s ease-in-out infinite filter cycle ported from personal-website's `lily-breathe`, renamed `crow-breathe`.
-- **Golden crow:** same silhouette geometry, white fill, warm glow `drop-shadow(0 0 8px rgba(255,200,120,0.35))`. The only non-monochrome element in the game — the seductive sheen of the pitch.
+- **Rich crow:** same body silhouette, white fill, **wearing a stovepipe top hat** (crown + wider brim) integrated into the path. Same cool white glow as the player — character is what marks him as the rich crow, not color. The hat is the visual punchline; "golden" was the earlier design and got replaced by the hat because a single accessory reads as wealth more immediately than a tint.
+- **Robo-Crow:** the factory output. Same body silhouette + two small antennas integrated into the path top, eye is a **square hole** instead of round (= screen/visor → robot at a glance), two clean metal "straps" wrap the chest and lower body (no rivets on the straps — they read better empty), and a single rivet at the beak-head joint suggests the beak is bolted on. All cutouts are subpaths via evenodd. No glow. Used on the factory conveyor (Screen 2) at `--color-ink-faint` and possibly elsewhere as a product reference.
 - **Background / under-crows:** flat fills at `--color-ink-faint`. No glow, no animation.
 
 All crow art ships as **inline SVG** in the bundle. One shared path per pose (idle, tap-bounce, ship-it) — 4–6 paths total. No raster, no sprite sheet.
@@ -187,7 +189,7 @@ interface GameState {
   screen: 0 | 1 | 2 | 3 | 4;     // 0=store, 1=factory, 2=couch, 3=ship, 4=store-again
   loop: number;                  // 1, 2, 3, …
   balance: number;               // pure function of loop
-  breadPrice: number;            // pure function of loop
+  hatPrice: number;              // pure function of loop
 }
 ```
 
@@ -236,8 +238,8 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - [x] **PR 0** — Spec
 - [x] **PR 1** — Scaffold
-- [ ] **PR 2** — Shared primitives
-- [ ] **PR 3** — Screen 1: the grocery store
+- [x] **PR 2** — Shared primitives
+- [ ] **PR 3** — Screen 1: the hat shop
 - [ ] **PR 4** — Screen 2: the factory
 - [ ] **PR 5** — Screen 3: the couch
 - [ ] **PR 6** — Screen 4: the spaceship
@@ -278,38 +280,38 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** visual + structural building blocks every screen reuses. No gameplay yet.
 - **Adds:**
-  - [ ] `src/crow.ts` — inline SVG for player crow (idle), golden crow (idle), background crow. `variant: "player" | "golden" | "background"` selects glow class.
-  - [ ] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance + loop counter), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
-  - [ ] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
-  - [ ] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
-  - [ ] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-golden`, button base styles, `prefers-reduced-motion` overrides.
-  - [ ] Throwaway dev-only "kitchen sink" route in `main.ts` — renders all three crow variants + HUD + button. Deleted in PR 3.
+  - [x] `src/crow.ts` — inline SVG for player crow (idle), rich crow (idle, wears top hat), robo-crow (square eye + antennas), background crow. `variant: "player" | "rich" | "background" | "robo"` selects glow class and SVG.
+  - [x] `src/ui.ts` — pure functions returning DOM nodes for HUD (balance only — loop count is intentionally hidden), primary `[ button ]`, `[ skip ]` corner control. No screen-specific logic.
+  - [x] `src/state.ts` — `GameState` type, `deriveLoopValues(loop)` pure fn, `loadLoop()` / `saveLoop()` stubs (single `localStorage` key).
+  - [x] `src/screens/types.ts` — `Screen` interface (`mount(host, ctx) → cleanup`).
+  - [x] CSS: `crow-breathe` keyframes (port of `lily-breathe`), `.crow-glow-player`, `.crow-glow-rich`, button base styles, `prefers-reduced-motion` overrides.
+  - [x] Throwaway dev-only "kitchen sink" route in `main.ts` — renders all three crow variants + HUD + button. Deleted in PR 3.
 - **Acceptance:**
-  - [ ] Kitchen-sink page shows three crows side-by-side, player + golden glowing, background flat
-  - [ ] Reduced-motion: halo holds steady, doesn't pulse
-  - [ ] Bundle still under budget
+  - [x] Kitchen-sink page shows all four crows side-by-side, player + rich (with top hat) glowing, robo (square eye + antennas) and background flat
+  - [x] Reduced-motion: halo holds steady, doesn't pulse
+  - [x] Bundle still under budget
 - **Dependencies:** PR 1.
 
-### PR 3 — Screen 1: the grocery store (`feat/screen-1-store`)
+### PR 3 — Screen 1: the hat shop (`feat/screen-1-store`)
 
-- **Goal:** first playable beat. Bread is too expensive, golden crow appears, single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
+- **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
 - **Adds:**
-  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 47`, HUD `$ 12`, player crow, golden crow entrance (CSS translate from off-right)
+  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 47`, HUD `$ 12`, player crow, rich crow entrance (CSS translate from off-right)
   - [ ] `INSUFFICIENT FUNDS.` flash on first tap
   - [ ] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
   - [ ] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
   - [ ] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
 - **Acceptance:**
   - [ ] On mobile, price tag, HUD, both crows, dialogue, and the single button fit one viewport — no scroll
-  - [ ] Golden crow enters with a smooth transform; reduced-motion just fades it in
+  - [ ] Rich crow enters with a smooth transform; reduced-motion just fades it in
   - [ ] `[ accept ]` advances to the placeholder
 - **Dependencies:** PR 2.
 
 ### PR 4 — Screen 2: the factory (`feat/screen-2-factory`)
 
-- **Goal:** launch beat. Conveyor of small crows, `[ ship it ]`, golden crow line, auto-advance.
+- **Goal:** launch beat. Conveyor of small crows, `[ ship it ]`, rich crow line, auto-advance.
 - **Adds:**
-  - [ ] `src/screens/factory.ts` — console silhouette, conveyor row of 5–7 background crows that translate-X on `[ ship it ]`, golden crow at the edge
+  - [ ] `src/screens/factory.ts` — console silhouette, conveyor row of 5–7 background crows that translate-X on `[ ship it ]`, rich crow at the edge
   - [ ] Auto-advance ~1.2 s after the ship animation ends
   - [ ] Replace the screen-2 placeholder from PR 3
 - **Acceptance:**
@@ -338,7 +340,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
   - [ ] `src/screens/ship.ts` — starfield (50–80 absolutely-positioned dots, staggered opacity keyframes; one CSS-driven layer, no JS)
   - [ ] Ship silhouette foreground
   - [ ] Row of background crows translating toward the ship over ~2 s
-  - [ ] Golden crow dialogue
+  - [ ] Rich crow dialogue
 - **Acceptance:**
   - [ ] Starfield doesn't tank FPS on mid-range Android Chrome (scrolling/tapping stays responsive)
   - [ ] Reduced-motion: stars steady, ship still, crows pre-positioned at the ship
@@ -350,8 +352,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Adds:**
   - [ ] State: increment `loop` on screen-4 → screen-0 transition, persist via `saveLoop()`
   - [ ] `deriveLoopValues(loop)` returns ×10 balance/price, monotonically
-  - [ ] HUD loop counter (`loop 2 / ∞`)
-  - [ ] Golden crow opening swaps to `"— again."` on loop ≥ 2
+  - [ ] Rich crow opening swaps to `"— again."` on loop ≥ 2
 - **Acceptance:**
   - [ ] Hard refresh mid-loop-3 returns to screen 1 of loop 3 (not loop 1)
   - [ ] Clearing `localStorage` resets to loop 1
