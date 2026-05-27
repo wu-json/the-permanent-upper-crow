@@ -334,10 +334,11 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** launch beat. Conveyor of Robo-Crows, `[ ship it ]`, rich crow's five-line celebration in the same streaming dialogue box.
 - **Adds:**
-  - [ ] `src/screens/factory.ts` — console silhouette on the left, conveyor row of Robo-Crows that translate-X on a continuous CSS loop after `[ ship it ]`, rich crow on the right edge (mirrored to face the conveyor)
-  - [ ] Extract the streaming dialogue box from `src/screens/store.ts` into `src/dialogue.ts` (shared primitive, takes `{ speaker, lines, onAdvance }`) and reuse it for the rich crow's five celebration lines (`"KAWKAWKAKAWKAWKAKAW"`, `"We are so back."`, `"I can smell our investors gawking at these profits."`, `"Our next quarter will crush those damn Eagles."`, `"Great work. I'm looking forward to enjoying my— I mean our fortune very soon in our public offering."`)
-  - [ ] Tap past the last line → advance to the next screen (placeholder in this PR)
-  - [ ] Replace the "screen 2 — coming soon" placeholder from PR 3
+  - [x] `src/screens/factory.ts` — player crow + console (deferred for first pass — just the player crow on the left), Robo-Crow conveyor that translate-Xs on a continuous CSS loop after `[ ship it ]`, rich crow on the right edge (mirrored to face the conveyor)
+  - [x] Extract the streaming dialogue box from `src/screens/store.ts` into `src/dialogue.ts` (shared primitive `createDialogue({ speaker })` with `play(lines)` / `setActive(bool)` / `onAdvance(cb)`) and reuse it for the rich crow's five celebration lines
+  - [x] Extract the loop-rotating cast into `src/cast.ts` so both screens share it
+  - [x] Tap past the last line → advance to the next screen (placeholder in this PR)
+  - [x] Replace the "screen 2 — coming soon" placeholder from PR 3 (placeholder now stands in for Screen 3)
 - **Acceptance:**
   - [ ] Conveyor runs via CSS keyframes / transforms only, no per-frame JS
   - [ ] Reduced-motion: conveyor pauses or moves slowly; dialogue still streams character-by-character at the same pace
