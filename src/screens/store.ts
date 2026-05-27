@@ -13,7 +13,16 @@ const HAT_SVG = `<svg viewBox="0 0 30 24" xmlns="http://www.w3.org/2000/svg" ari
 // as the crow's feet. One continuous silhouette.
 const TABLE_SVG = `<svg viewBox="0 0 70 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M5 0L65 0L65 6L60 6L60 32L56 32L56 6L14 6L14 32L10 32L10 6L5 6Z"/></svg>`;
 
-const DIALOGUE = `"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."`;
+const RICH_SPEAKER = 'BENJAMIN PECK';
+const RICH_DIALOGUE: readonly string[] = [
+  "why hello there! i'm Benjamin Peck, Founder and CEO of Crow Automation Systems.",
+  "it seems you're having... some trouble with that purchase.",
+  'what if i told you you could earn generational wealth with just a few years of hard work?',
+  'at Crow Automation Systems, we produce the Robo-Crow. it is an autonomous robot that automates all labor in the e-kaw-nomy',
+  'you must decide soon. we are running out of time before you become stuck with the undercrows.',
+  'equity in our venerable operation is anything but abdundant',
+];
+const STREAM_MS_PER_CHAR = 28;
 
 // Subtext that appears under INSUFFICIENT FUNDS once the player
 // has tapped the hat enough times to count as bargaining. Indexed
@@ -100,10 +109,30 @@ export const storeScreen: Screen = {
 
     stage.append(playerCol, displayCol, richCol, flash);
 
-    // Dialogue (revealed in beat 2)
-    const dialogue = document.createElement('p');
-    dialogue.classList.add('dialogue', 'reveal');
-    dialogue.textContent = DIALOGUE;
+    // Dialogue box — Animal-Crossing-style with speaker label,
+    // streaming text, and a bobbing ▼ continue indicator. Built
+    // inline here; promote to src/dialogue.ts when a second
+    // screen needs it.
+    const dialogueBox = document.createElement('div');
+    dialogueBox.classList.add('dialogue-box', 'reveal');
+
+    const dlgSpeaker = document.createElement('div');
+    dlgSpeaker.classList.add('dialogue-speaker');
+    dlgSpeaker.textContent = RICH_SPEAKER;
+
+    const dlgBody = document.createElement('div');
+    dlgBody.classList.add('dialogue-body');
+
+    const dlgText = document.createElement('span');
+    dlgText.classList.add('dialogue-text');
+
+    const dlgIndicator = document.createElement('span');
+    dlgIndicator.classList.add('dialogue-indicator');
+    dlgIndicator.setAttribute('aria-hidden', 'true');
+    dlgIndicator.textContent = '▼';
+
+    dlgBody.append(dlgText, dlgIndicator);
+    dialogueBox.append(dlgSpeaker, dlgBody);
 
     // CTA wrap holds both [ continue ] and [ accept ] stacked
     // absolutely; only one is .shown at a time so the swap
@@ -119,15 +148,16 @@ export const storeScreen: Screen = {
 
     cta.append(continueBtn, accept);
 
-    root.append(hudWrap, stage, dialogue, cta);
+    root.append(hudWrap, stage, dialogueBox, cta);
     host.appendChild(root);
 
-    // Two-beat cascade
+    // Cascade
     //   beat 0 → 1: tap hat → flash + dim hat + show [ continue ]
-    //   beat 1 → 2: tap continue → rich crow slides in,
-    //               dialogue + [ accept ] cross-fade in,
-    //               [ continue ] cross-fades out
-    let beat: 0 | 1 | 2 = 0;
+    //   beat 1 → 2: tap continue → rich crow slides in, dialogue
+    //               box fades in and starts streaming
+    //   beat 2 → 3: last dialogue line finishes → [ accept ]
+    //               cross-fades in, dialogue stops accepting taps
+    let beat: 0 | 1 | 2 | 3 = 0;
     let hatClicks = 0;
 
     const onTapHat = () => {
@@ -156,19 +186,90 @@ export const storeScreen: Screen = {
       }
     };
 
+    // Streaming dialogue state
+    let dlgLineIdx = 0;
+    let dlgCharIdx = 0;
+    let streamTimer: number | null = null;
+    let streaming = false;
+    let startDelayTimer: number | null = null;
+
+    const onLineComplete = () => {
+      streaming = false;
+      streamTimer = null;
+      if (dlgLineIdx < RICH_DIALOGUE.length - 1) {
+        dlgIndicator.classList.add('shown');
+      } else {
+        // Final line — dialogue is done. Hide indicator, reveal
+        // the [ accept ] button, stop accepting taps.
+        beat = 3;
+        dialogueBox.classList.add('done');
+        dlgIndicator.classList.remove('shown');
+        accept.classList.add('shown');
+      }
+    };
+
+    const streamLine = () => {
+      streaming = true;
+      dlgIndicator.classList.remove('shown');
+      dlgText.textContent = '';
+      dlgCharIdx = 0;
+      const line = RICH_DIALOGUE[dlgLineIdx];
+
+      const tick = () => {
+        if (dlgCharIdx >= line.length) {
+          onLineComplete();
+          return;
+        }
+        dlgText.textContent = line.slice(0, dlgCharIdx + 1);
+        dlgCharIdx += 1;
+        streamTimer = window.setTimeout(tick, STREAM_MS_PER_CHAR);
+      };
+      tick();
+    };
+
+    const finishLine = () => {
+      if (streamTimer !== null) {
+        window.clearTimeout(streamTimer);
+        streamTimer = null;
+      }
+      dlgText.textContent = RICH_DIALOGUE[dlgLineIdx];
+      dlgCharIdx = RICH_DIALOGUE[dlgLineIdx].length;
+      onLineComplete();
+    };
+
+    const onTapDialogue = () => {
+      if (beat !== 2) return;
+      if (streaming) {
+        finishLine();
+      } else if (dlgLineIdx < RICH_DIALOGUE.length - 1) {
+        dlgLineIdx += 1;
+        streamLine();
+      }
+    };
+
     const onTapContinue = () => {
       if (beat !== 1) return;
       beat = 2;
       stage.classList.add('rich-entered');
       continueBtn.classList.remove('shown');
-      dialogue.classList.add('shown');
-      accept.classList.add('shown');
+      dialogueBox.classList.add('shown');
+      // Let the rich crow get partway into his entrance before
+      // he starts talking — feels less like he's already standing
+      // there mid-sentence.
+      startDelayTimer = window.setTimeout(() => {
+        startDelayTimer = null;
+        streamLine();
+      }, 600);
     };
 
     display.addEventListener('click', onTapHat);
+    dialogueBox.addEventListener('click', onTapDialogue);
 
     return () => {
+      if (streamTimer !== null) window.clearTimeout(streamTimer);
+      if (startDelayTimer !== null) window.clearTimeout(startDelayTimer);
       display.removeEventListener('click', onTapHat);
+      dialogueBox.removeEventListener('click', onTapDialogue);
       root.remove();
     };
   },

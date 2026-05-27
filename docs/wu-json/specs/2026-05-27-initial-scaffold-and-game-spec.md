@@ -37,10 +37,16 @@ Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The
 
 Setting: player-crow next to a display table. Top hat sits on the table (same hat the rich crow wears). Bordered placard below the table reads `TOP HAT FOR SALE: $ 10`. HUD: `NEST WORTH: $ 1`. No storefront chrome — the hat-on-table + sign is the venue cue; an awning silhouette was tried and removed for reading as a stray gray bar.
 
-- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
-- **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
-- *"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."*
-- One button: `[ accept ]`. There is no decline — the absent option *is* the satire.
+- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash (red, persistent). After 5 taps, an escalating subtext line cycles under the flash on each subsequent tap (broke-jokes, bird puns, "have you considered onlybirds?", "stream your tapping on twitch", etc.).
+- Tap `[ continue ]` → **rich crow** (canonically **Benjamin Peck**, *CEO of Crow Automation Systems*) slides in from the right, facing the player. He already wears the same hat the player just got priced out of.
+- His pitch streams Animal-Crossing-style line-by-line in a bordered dialogue box labeled `BENJAMIN PECK`; tap mid-stream skips to end of current line, tap when complete advances to the next. Tone is stilted-formal businesscrow with bird puns and a slightly precarious undercurrent — over-titling, scarcity framing, the occasional wink at the audience:
+  - *"why hello there! i'm Benjamin Peck, Founder and CEO of Crow Automation Systems."*
+  - *"it seems you're having... some trouble with that purchase."*
+  - *"what if i told you you could earn generational wealth with just a few years of hard work?"*
+  - *"at Crow Automation Systems, we produce the Robo-Crow. it is an autonomous robot that automates all labor in the e-kaw-nomy."*
+  - *"you must decide soon. we are running out of time before you become stuck with the undercrows."*
+  - *"equity in our venerable operation is anything but abundant."*
+- After the last line, `[ accept ]` cross-fades in. There is no decline — the absent option *is* the satire.
 
 ### Screen 2 — *The Factory*
 

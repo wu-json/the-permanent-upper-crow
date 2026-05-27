@@ -435,16 +435,62 @@
   }
 }
 
-/* ── Dialogue + reveal ───────────────────────────────────────────── */
+/* ── Dialogue box (Animal-Crossing-style streaming) ──────────────── */
 
-.dialogue {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: var(--color-ink-soft);
+.dialogue-box {
+  width: 100%;
   max-width: 32rem;
   margin: 0 auto;
-  text-align: center;
+  padding: 0.7rem 0.85rem 0.75rem;
+  border: 1px solid var(--color-ink-faint);
+  background: rgba(0, 0, 0, 0.55);
+  font-family: var(--font-pixel);
+  cursor: pointer;
+}
+
+.dialogue-box.done {
+  cursor: default;
+}
+
+.dialogue-speaker {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--color-ink-muted);
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-ink-hair);
+  padding-bottom: 0.3rem;
+}
+
+.dialogue-body {
+  font-family: var(--font-pixel);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: var(--color-ink);
+  min-height: calc(0.9rem * 1.5 * 4);
+}
+
+.dialogue-indicator {
+  display: inline-block;
+  margin-left: 0.4rem;
+  color: var(--color-ink-muted);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.dialogue-indicator.shown {
+  opacity: 1;
+  animation: dialogue-indicator-bob 1.1s ease-in-out infinite;
+}
+
+@keyframes dialogue-indicator-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
 }
 
 .cta-wrap {
@@ -530,6 +576,10 @@
 
   .store-hat,
   .store-hat svg {
+    animation: none;
+  }
+
+  .dialogue-indicator.shown {
     animation: none;
   }
 
