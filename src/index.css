@@ -572,7 +572,7 @@
 }
 
 .contract-terms {
-  margin: 0 0 0.9rem;
+  margin: 0 0 2rem;
   padding-left: 1.1rem;
 }
 
@@ -583,7 +583,7 @@
 .contract-signatures {
   display: flex;
   gap: 1rem;
-  margin-top: 0.6rem;
+  margin-top: 1.5rem;
 }
 
 .contract-sig {

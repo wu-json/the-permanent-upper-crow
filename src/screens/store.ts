@@ -206,8 +206,10 @@ export const storeScreen: Screen = {
           <p>The undersigned ("Employee") agrees to the following terms with ${cast.company} (the "Company"):</p>
           <ol class="contract-terms">
             <li>Dedicate all labor, judgment, and waking hours to the development of Robo-Crow.</li>
+            <li>Maintain a 12/12/7 in-office presence at our San Franchickso headquarters.</li>
+            <li>Receive complimentary lunch and dinner on premises (mandatory).</li>
             <li>Acknowledge that the window is closing.</li>
-            <li>Accept equity in the Company, which the Company affirms is anything but abundant.</li>
+            <li>Accept 1% equity in the Company, which the Company affirms is anything but abundant.</li>
             <li>Forfeit the right to wonder if there was another way.</li>
           </ol>
           <div class="contract-signatures">
@@ -229,7 +231,7 @@ export const storeScreen: Screen = {
     const contractActions = document.createElement('div');
     contractActions.classList.add('contract-actions');
     const decline = createPrimaryButton('decline', () => onTapDecline());
-    const accept = createPrimaryButton('accept', () => ctx.advance());
+    const accept = createPrimaryButton('sign', () => ctx.advance());
     contractActions.append(decline, accept);
 
     const contractThought = document.createElement('div');
