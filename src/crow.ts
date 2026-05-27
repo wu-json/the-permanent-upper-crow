@@ -18,11 +18,15 @@ const CROW_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" 
 const CROW_RICH_SVG = `<svg viewBox="0 -16 100 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M26 2Q30 4 42 4L42 -14L58 -14L58 4Q70 4 74 2L74 10L70 12C72 16 72 22 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C28 22 28 16 30 12L26 10ZM38 28a8 8 0 1 0 16 0a8 8 0 1 0-16 0Z"/></svg>`;
 
 // Robo-Crow: the factory output the player ships. Same body
-// silhouette + two small antennas (integrated into the path so
-// no overlap stacking on the translucent variant) and a SQUARE
-// eye instead of a round hole — reads as "screen / visor" =
-// robot at a glance.
-const CROW_ROBO_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M44 2L46 2L46 8L54 8L54 2L56 2L56 8C64 8 70 18 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C30 18 36 8 44 8ZM38 20L54 20L54 36L38 36Z"/></svg>`;
+// silhouette + two small antennas integrated into the path top,
+// SQUARE eye (= screen/visor), and two metal "straps" wrapping
+// the chest and lower body. Each strap is a slight trapezoid
+// (top edge narrower than bottom) so it tracks the body's curve
+// and doesn't poke past the silhouette. All cutouts are
+// subpaths of the same path via fill-rule "evenodd" — no
+// separate elements, no alpha stacking on the translucent
+// variant.
+const CROW_ROBO_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M44 2L46 2L46 8L54 8L54 2L56 2L56 8C64 8 70 18 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C30 18 36 8 44 8ZM38 20L54 20L54 36L38 36ZM22 58L78 58L79 62L21 62ZM15 92L85 92L85 96L15 96Z"/></svg>`;
 
 const CROW_SVG_BY_VARIANT: Record<CrowVariant, string> = {
   player: CROW_SVG,

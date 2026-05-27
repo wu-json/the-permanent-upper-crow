@@ -40,10 +40,9 @@ const crows = document.createElement('div');
 Object.assign(crows.style, {
   display: 'flex',
   gap: '1.5rem',
-  alignItems: 'center',
+  alignItems: 'flex-end',
   justifyContent: 'center',
   flexWrap: 'wrap',
-  flex: '1',
 });
 crows.append(
   createCrow('background'),
@@ -64,5 +63,18 @@ buttons.append(
   createSkipButton(() => console.log('skip tapped')),
 );
 
-root.append(hudWrap, title, crows, buttons);
+// Wrap crows + buttons in a group that gets vertically centered
+// in the remaining space (margin: auto absorbs the free space
+// above and below in a flex column).
+const centerGroup = document.createElement('div');
+Object.assign(centerGroup.style, {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '1.5rem',
+  margin: 'auto 0',
+});
+centerGroup.append(crows, buttons);
+
+root.append(hudWrap, title, centerGroup);
 app.appendChild(root);
