@@ -23,6 +23,7 @@ const HAT_CLICK_SUBTEXT_AT = 6;
 const HAT_CLICK_SUBTEXT: readonly string[] = [
   "you've already maxed out your crow card.",
   'tapping it harder will not lower the price.',
+  'you are cuckoo to keep trying.',
   'have you considered that you simply cannot afford this hat?',
   'the hat does not feel sorry for you.',
   'this is not a wishlist.',
@@ -37,8 +38,6 @@ const HAT_CLICK_SUBTEXT: readonly string[] = [
   'no one is impressed by your persistence.',
   'no girlfriend to even split the cost with.',
   'your broke ass gets no finches.',
-  'your nest worth will always be $1.',
-  'you are cuckoo to keep trying.',
   'have you considered onlybirds?',
 ];
 
