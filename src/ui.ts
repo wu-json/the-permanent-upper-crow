@@ -12,11 +12,15 @@ export function createHud({ balance }: HudOptions): HTMLElement {
   const hud = document.createElement('div');
   hud.classList.add('hud');
 
+  const labelEl = document.createElement('span');
+  labelEl.classList.add('hud-label');
+  labelEl.textContent = 'NEST WORTH:';
+
   const balanceEl = document.createElement('span');
   balanceEl.classList.add('hud-balance');
   balanceEl.textContent = formatMoney(balance);
 
-  hud.append(balanceEl);
+  hud.append(labelEl, balanceEl);
   return hud;
 }
 

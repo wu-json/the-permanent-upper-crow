@@ -96,10 +96,16 @@
 .hud {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.6rem;
   font-family: var(--font-pixel);
   letter-spacing: 0.05em;
+}
+
+.hud-label {
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.1em;
 }
 
 .hud-balance {
@@ -157,11 +163,245 @@
   color: var(--color-ink-soft);
 }
 
+/* ── Screen layout ───────────────────────────────────────────────── */
+
+.screen {
+  height: 100%;
+  width: 100%;
+  padding: 1.25rem 1.25rem
+    max(1.25rem, calc(env(safe-area-inset-bottom, 0) + 0.5rem));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-wrap {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ── Store screen ────────────────────────────────────────────────── */
+
+.store-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  justify-items: center;
+  gap: 0.5rem;
+}
+
+.store-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.store-col-player {
+  justify-self: end;
+  padding-right: 0.5rem;
+}
+
+.store-col-rich {
+  justify-self: start;
+  padding-left: 0.5rem;
+  transform: translateX(140%);
+  opacity: 0;
+  transition:
+    transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 600ms ease;
+}
+
+.store-stage.rich-entered .store-col-rich {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.store-display {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0.5rem 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  transition: transform 80ms ease;
+}
+
+/* Crow SVGs have ~3px of empty space at the bottom of their
+ * viewBox; pull them down so their feet land on the same line
+ * the table legs end on. */
+.store-col-player .crow,
+.store-col-rich .crow {
+  margin-bottom: -3px;
+}
+
+.store-display:active {
+  transform: translateY(1px);
+}
+
+.store-display:focus-visible {
+  outline: 1px solid var(--color-ink-faint);
+  outline-offset: 4px;
+}
+
+.store-hat {
+  display: block;
+  width: 56px;
+  height: 48px;
+  color: var(--color-ink);
+  filter: drop-shadow(0 0 6px var(--color-glow-soft));
+}
+
+.store-hat svg,
+.store-table svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.store-table {
+  display: block;
+  width: 120px;
+  height: 56px;
+  color: var(--color-ink-soft);
+}
+
+.store-sign {
+  margin-bottom: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-ink-faint);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.insufficient-flash {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-pixel);
+  font-size: 1.05rem;
+  letter-spacing: 0.18em;
+  color: var(--color-ink);
+  text-shadow: 0 0 12px var(--color-glow);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.insufficient-flash.show {
+  animation: flash-once 900ms ease-out;
+}
+
+@keyframes flash-once {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+@keyframes flash-once-reduced {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  70% {
+    opacity: 1;
+  }
+}
+
+/* ── Dialogue + reveal ───────────────────────────────────────────── */
+
+.dialogue {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--color-ink-soft);
+  max-width: 32rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.accept-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.reveal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.reveal.shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Placeholder screen ──────────────────────────────────────────── */
+
+.screen-placeholder {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.placeholder-title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  color: var(--color-ink-soft);
+}
+
+.placeholder-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-ink-muted);
+}
+
 /* ── Reduced motion ──────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .crow-glow-player,
-  .crow-glow-golden {
+  .crow-glow-rich {
     animation: none;
+  }
+
+  .store-col-rich {
+    transform: none;
+    transition: opacity 400ms ease;
+  }
+
+  .store-stage.rich-entered .store-col-rich {
+    transform: none;
+  }
+
+  .insufficient-flash.show {
+    animation-name: flash-once-reduced;
   }
 }

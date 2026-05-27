@@ -35,7 +35,7 @@ Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The
 
 ### Screen 1 — *The Hat Shop*
 
-Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 10`. HUD balance: `$ 1`.
+Setting: player-crow next to a display table. Top hat sits on the table (same hat the rich crow wears). Bordered placard below the table reads `TOP HAT FOR SALE: $ 10`. HUD: `NEST WORTH: $ 1`. No storefront chrome — the hat-on-table + sign is the venue cue; an awning silhouette was tried and removed for reading as a stray gray bar.
 
 - Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
 - **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
@@ -298,11 +298,11 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
 - **Adds:**
-  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 10`, HUD `$ 1`, player crow, rich crow entrance (CSS translate from off-right)
-  - [ ] `INSUFFICIENT FUNDS.` flash on first tap
-  - [ ] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
-  - [ ] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
-  - [ ] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
+  - [x] `src/screens/store.ts` — hat-on-table display with `TOP HAT FOR SALE: $ 10` placard, HUD `NEST WORTH: $ 1`, player crow, rich crow entrance (CSS translate from off-right). No skip button on this screen.
+  - [x] `INSUFFICIENT FUNDS.` flash on first tap
+  - [x] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
+  - [x] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
+  - [x] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
 - **Acceptance:**
   - [ ] On mobile, price tag, HUD, both crows, dialogue, and the single button fit one viewport — no scroll
   - [ ] Rich crow enters with a smooth transform; reduced-motion just fades it in

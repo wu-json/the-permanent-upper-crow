@@ -1,8 +1,8 @@
 const STORAGE_KEY = 'puc:loop';
 
-const BASE_BALANCE = 12;
-const BASE_POST_LAUNCH_BALANCE = 41_200;
-const BASE_HAT_PRICE = 47;
+const BASE_BALANCE = 1;
+const BASE_HAT_PRICE = 10;
+const LOOP_FACTOR = 100;
 
 export type ScreenIndex = 0 | 1 | 2 | 3 | 4;
 
@@ -15,15 +15,13 @@ export interface GameState {
 
 export interface LoopValues {
   balance: number;
-  postLaunchBalance: number;
   hatPrice: number;
 }
 
 export function deriveLoopValues(loop: number): LoopValues {
-  const factor = 10 ** Math.max(0, loop - 1);
+  const factor = LOOP_FACTOR ** Math.max(0, loop - 1);
   return {
     balance: BASE_BALANCE * factor,
-    postLaunchBalance: BASE_POST_LAUNCH_BALANCE * factor,
     hatPrice: BASE_HAT_PRICE * factor,
   };
 }
