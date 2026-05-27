@@ -52,7 +52,10 @@ export const storeScreen: Screen = {
 
     const sign = document.createElement('div');
     sign.classList.add('store-sign');
-    sign.textContent = `TOP HAT FOR SALE: ${formatMoney(hatPrice)}`;
+    sign.innerHTML = `
+      <span class="store-sign-main">TOP HAT FOR SALE: ${formatMoney(hatPrice)}</span>
+      <span class="store-sign-hint">↓ <span class="hint-action"></span> to buy</span>
+    `;
 
     displayCol.append(sign, display);
 
@@ -84,22 +87,19 @@ export const storeScreen: Screen = {
 
     // Tap-gated cascade
     let revealed = false;
-    let flashTimer: number | null = null;
     const onTapHat = () => {
-      // Restart the flash animation cleanly on repeat taps.
+      // Replay the entrance pulse on every tap, but the flash
+      // itself stays visible once shown.
       flash.classList.remove('show');
       // Force reflow so the animation restarts.
       void flash.offsetWidth;
       flash.classList.add('show');
-      if (flashTimer !== null) window.clearTimeout(flashTimer);
-      flashTimer = window.setTimeout(() => {
-        flash.classList.remove('show');
-        flashTimer = null;
-      }, 900);
 
       if (!revealed) {
         revealed = true;
         stage.classList.add('rich-entered');
+        sign.classList.add('hint-consumed');
+        displayCol.classList.add('revealed');
         dialogue.classList.add('shown');
         accept.classList.add('shown');
       }
@@ -107,7 +107,6 @@ export const storeScreen: Screen = {
     display.addEventListener('click', onTapHat);
 
     return () => {
-      if (flashTimer !== null) window.clearTimeout(flashTimer);
       display.removeEventListener('click', onTapHat);
       root.remove();
     };

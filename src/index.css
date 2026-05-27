@@ -13,6 +13,8 @@
   --color-glow: rgba(255, 255, 255, 0.3);
   --color-glow-soft: rgba(255, 255, 255, 0.2);
   --color-glow-mist: rgba(255, 255, 255, 0.08);
+  --color-error: #ff3344;
+  --color-error-glow: rgba(255, 51, 68, 0.45);
 }
 
 @theme {
@@ -32,6 +34,9 @@
 
   #app {
     @apply h-full w-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -168,6 +173,8 @@
 .screen {
   height: 100%;
   width: 100%;
+  max-height: 880px;
+  max-width: 500px;
   padding: 1.25rem 1.25rem
     max(1.25rem, calc(env(safe-area-inset-bottom, 0) + 0.5rem));
   box-sizing: border-box;
@@ -259,7 +266,67 @@
   width: 56px;
   height: 48px;
   color: var(--color-ink);
+  /* Pulse opacity on the span; pulse glow on the SVG inside (split
+   * across two elements so the span's `filter` is free for hover
+   * brightness without killing the halo animation). */
+  animation: hat-pulse-opacity 1.8s ease-in-out infinite;
+  transition: filter 150ms ease;
+  will-change: opacity, filter;
+}
+
+.store-hat svg {
+  animation: hat-pulse-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes hat-pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes hat-pulse-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px var(--color-glow-mist));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px var(--color-glow-strong))
+      drop-shadow(0 0 28px var(--color-glow));
+  }
+}
+
+.store-col-display.revealed .store-hat,
+.store-col-display.revealed .store-hat svg {
+  animation: none;
+}
+
+.store-col-display.revealed .store-hat {
+  opacity: 1;
+}
+
+.store-col-display.revealed .store-hat svg {
   filter: drop-shadow(0 0 6px var(--color-glow-soft));
+}
+
+/* Hover/focus dims the hat — feedback that it's the click target.
+ * Brightness on the span composes with the pulse, so the hat
+ * still breathes, just darker. */
+@media (hover: hover) and (pointer: fine) {
+  .store-display:hover .store-hat {
+    filter: brightness(0.4);
+  }
+}
+
+.store-display:focus-visible .store-hat {
+  filter: brightness(0.55);
+}
+
+.store-display:active .store-hat {
+  filter: brightness(0.3);
 }
 
 .store-hat svg,
@@ -280,12 +347,41 @@
   margin-bottom: 0.6rem;
   padding: 0.35rem 0.7rem;
   font-family: var(--font-pixel);
+  border: 1px solid var(--color-ink-faint);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.store-sign-main {
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   color: var(--color-ink-soft);
-  border: 1px solid var(--color-ink-faint);
   white-space: nowrap;
-  text-align: center;
+}
+
+.store-sign-hint {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.hint-action::before {
+  content: 'tap';
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hint-action::before {
+    content: 'click';
+  }
+}
+
+.store-sign.hint-consumed .store-sign-hint {
+  opacity: 0;
+  transition: opacity 400ms ease;
 }
 
 .insufficient-flash {
@@ -296,40 +392,32 @@
   font-family: var(--font-pixel);
   font-size: 1.05rem;
   letter-spacing: 0.18em;
-  color: var(--color-ink);
-  text-shadow: 0 0 12px var(--color-glow);
+  color: var(--color-error);
+  text-shadow:
+    0 0 8px var(--color-error-glow),
+    0 0 18px var(--color-error-glow);
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
 }
 
 .insufficient-flash.show {
-  animation: flash-once 900ms ease-out;
+  opacity: 1;
+  animation: flash-in 380ms ease-out;
 }
 
-@keyframes flash-once {
+@keyframes flash-in {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.96);
+    transform: translate(-50%, -50%) scale(0.92);
   }
-  20% {
+  60% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
     transform: translate(-50%, -50%) scale(1.04);
   }
-}
-
-@keyframes flash-once-reduced {
-  0%,
   100% {
-    opacity: 0;
-  }
-  20%,
-  70% {
     opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -402,6 +490,24 @@
   }
 
   .insufficient-flash.show {
-    animation-name: flash-once-reduced;
+    animation: none;
+  }
+
+  .store-sign-hint {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .store-hat,
+  .store-hat svg {
+    animation: none;
+  }
+
+  .store-hat {
+    opacity: 1;
+  }
+
+  .store-hat svg {
+    filter: drop-shadow(0 0 6px var(--color-glow-soft));
   }
 }
