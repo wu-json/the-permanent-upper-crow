@@ -13,16 +13,58 @@ const HAT_SVG = `<svg viewBox="0 0 30 24" xmlns="http://www.w3.org/2000/svg" ari
 // as the crow's feet. One continuous silhouette.
 const TABLE_SVG = `<svg viewBox="0 0 70 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M5 0L65 0L65 6L60 6L60 32L56 32L56 6L14 6L14 32L10 32L10 6L5 6Z"/></svg>`;
 
-const RICH_SPEAKER = 'BENJAMIN PECK';
-const RICH_DIALOGUE: readonly string[] = [
-  "why hello there! i'm Benjamin Peck, Founder and CEO of Crow Automation Systems.",
-  "it seems you're having... some trouble with that purchase.",
-  'what if i told you you could earn generational wealth with just a few years of hard work?',
-  'at Crow Automation Systems, we produce the Robo-Crow. it is an autonomous robot that automates all labor in the e-kaw-nomy',
-  'you must decide soon. we are running out of time before you become stuck with the undercrows.',
-  'equity in our venerable operation is anything but abdundant',
+// The rich crow rotates per loop — each iteration of the cycle
+// brings a new "founder" pitching the same scheme. Cast is
+// indexed by (loop - 1) modulo the list length.
+interface RichCast {
+  name: string;
+  company: string;
+}
+const RICH_CASTS: readonly RichCast[] = [
+  { name: 'Benjamin Peck', company: 'Crow Automation Systems' },
+  { name: 'Margaret Caw', company: 'Caw Labs' },
+  { name: 'Edgar Crowford', company: 'Crowford Ventures' },
+  { name: 'Olivia Beakerson', company: 'Beaknet' },
+  { name: 'Marcus Talon', company: 'Talonchain' },
+  { name: 'Felicity Plume', company: 'Plume Capital' },
 ];
+
+function getRichCast(loop: number): RichCast {
+  return RICH_CASTS[(loop - 1) % RICH_CASTS.length];
+}
+
+// Benjamin Peck and his successors all deliver the same template
+// pitch in proper sentence case — the stilted-formal grammar is
+// the marker of corporate persona; every other voice in the game
+// stays lowercase.
+function makeRichDialogue({ name, company }: RichCast): readonly string[] {
+  return [
+    `Why hello there! I'm ${name}, Founder and CEO of ${company}.`,
+    "It seems you're having... some trouble with that purchase.",
+    'What if I told you you could earn generational wealth with just a few years of hard work?',
+    `At ${company}, we produce the Robo-Crow. It is an autonomous robot that automates all labor in the e-kaw-nomy.`,
+    'You must decide soon. We are running out of time before you become stuck with the under-crows.',
+    'Equity in our venerable operation is anything but abundant.',
+  ];
+}
+
 const STREAM_MS_PER_CHAR = 28;
+
+// First-person internal monologue surfaced when the player taps
+// [ decline ]. Each tap cycles to the next reminder of why the
+// player can't actually walk away. List sticks at the last line.
+const DECLINE_THOUGHTS: readonly string[] = [
+  'rent is due next month.',
+  'the perch payments are three months behind.',
+  'groceries. just groceries.',
+  'the under-crow loan shark is calling again.',
+  'my fledgling cousin needs braces.',
+  'my egg insurance lapsed last week.',
+  "the nest down payment isn't going to save itself.",
+  'mama crow is in the hospital remember.',
+  'i told my sister i would help pay for her kaw school fees.',
+  'the chickadee i borrowed from is calling. again.',
+];
 
 // Subtext that appears under INSUFFICIENT FUNDS once the player
 // has tapped the hat enough times to count as bargaining. Indexed
@@ -53,6 +95,8 @@ const HAT_CLICK_SUBTEXT: readonly string[] = [
 export const storeScreen: Screen = {
   mount(host, ctx) {
     const { balance, hatPrice } = deriveLoopValues(ctx.state.loop);
+    const cast = getRichCast(ctx.state.loop);
+    const richLines = makeRichDialogue(cast);
 
     const root = document.createElement('div');
     root.classList.add('screen', 'screen-store');
@@ -118,7 +162,7 @@ export const storeScreen: Screen = {
 
     const dlgSpeaker = document.createElement('div');
     dlgSpeaker.classList.add('dialogue-speaker');
-    dlgSpeaker.textContent = RICH_SPEAKER;
+    dlgSpeaker.textContent = cast.name.toUpperCase();
 
     const dlgBody = document.createElement('div');
     dlgBody.classList.add('dialogue-body');
@@ -134,19 +178,29 @@ export const storeScreen: Screen = {
     dlgBody.append(dlgText, dlgIndicator);
     dialogueBox.append(dlgSpeaker, dlgBody);
 
-    // CTA wrap holds both [ continue ] and [ accept ] stacked
-    // absolutely; only one is .shown at a time so the swap
-    // cross-fades without a layout jump.
+    // CTA wrap holds [ continue ] (beat 1) and the
+    // [ decline ] · [ accept ] pair (beat 3) stacked absolutely;
+    // each .reveal'd element cross-fades in on its beat without
+    // a layout jump. A muted "thought" line lives below the pair
+    // and surfaces a different excuse on every [ decline ] tap.
     const cta = document.createElement('div');
     cta.classList.add('cta-wrap');
 
     const continueBtn = createPrimaryButton('continue', () => onTapContinue());
     continueBtn.classList.add('reveal');
 
-    const accept = createPrimaryButton('accept', () => ctx.advance());
-    accept.classList.add('reveal');
+    const ctaPair = document.createElement('div');
+    ctaPair.classList.add('cta-pair', 'reveal');
 
-    cta.append(continueBtn, accept);
+    const decline = createPrimaryButton('decline', () => onTapDecline());
+    const accept = createPrimaryButton('accept', () => ctx.advance());
+    ctaPair.append(decline, accept);
+
+    const thought = document.createElement('div');
+    thought.classList.add('cta-thought');
+    thought.setAttribute('aria-live', 'polite');
+
+    cta.append(continueBtn, ctaPair, thought);
 
     root.append(hudWrap, stage, dialogueBox, cta);
     host.appendChild(root);
@@ -155,10 +209,19 @@ export const storeScreen: Screen = {
     //   beat 0 → 1: tap hat → flash + dim hat + show [ continue ]
     //   beat 1 → 2: tap continue → rich crow slides in, dialogue
     //               box fades in and starts streaming
-    //   beat 2 → 3: last dialogue line finishes → [ accept ]
-    //               cross-fades in, dialogue stops accepting taps
+    //   beat 2 → 3: last dialogue line finishes → the
+    //               [ decline ] · [ accept ] pair cross-fades in;
+    //               dialogue stops accepting taps
     let beat: 0 | 1 | 2 | 3 = 0;
     let hatClicks = 0;
+    let declineClicks = 0;
+
+    const onTapDecline = () => {
+      declineClicks += 1;
+      const idx = Math.min(declineClicks - 1, DECLINE_THOUGHTS.length - 1);
+      thought.textContent = DECLINE_THOUGHTS[idx];
+      thought.classList.add('shown');
+    };
 
     const onTapHat = () => {
       hatClicks += 1;
@@ -196,15 +259,15 @@ export const storeScreen: Screen = {
     const onLineComplete = () => {
       streaming = false;
       streamTimer = null;
-      if (dlgLineIdx < RICH_DIALOGUE.length - 1) {
+      if (dlgLineIdx < richLines.length - 1) {
         dlgIndicator.classList.add('shown');
       } else {
         // Final line — dialogue is done. Hide indicator, reveal
-        // the [ accept ] button, stop accepting taps.
+        // the decline · accept pair, stop accepting taps.
         beat = 3;
         dialogueBox.classList.add('done');
         dlgIndicator.classList.remove('shown');
-        accept.classList.add('shown');
+        ctaPair.classList.add('shown');
       }
     };
 
@@ -213,7 +276,7 @@ export const storeScreen: Screen = {
       dlgIndicator.classList.remove('shown');
       dlgText.textContent = '';
       dlgCharIdx = 0;
-      const line = RICH_DIALOGUE[dlgLineIdx];
+      const line = richLines[dlgLineIdx];
 
       const tick = () => {
         if (dlgCharIdx >= line.length) {
@@ -232,8 +295,8 @@ export const storeScreen: Screen = {
         window.clearTimeout(streamTimer);
         streamTimer = null;
       }
-      dlgText.textContent = RICH_DIALOGUE[dlgLineIdx];
-      dlgCharIdx = RICH_DIALOGUE[dlgLineIdx].length;
+      dlgText.textContent = richLines[dlgLineIdx];
+      dlgCharIdx = richLines[dlgLineIdx].length;
       onLineComplete();
     };
 
@@ -241,7 +304,7 @@ export const storeScreen: Screen = {
       if (beat !== 2) return;
       if (streaming) {
         finishLine();
-      } else if (dlgLineIdx < RICH_DIALOGUE.length - 1) {
+      } else if (dlgLineIdx < richLines.length - 1) {
         dlgLineIdx += 1;
         streamLine();
       }

@@ -31,22 +31,22 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 
 ## Story (canonical script)
 
-Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow speaks with techno-optimist cadence ("we're so back", "generational", "the only ethical move").
+Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow is the exception — he speaks in proper sentence case, and the formal grammar is the marker of corporate persona that sets him apart from every other voice (player, narrator, system messages). His cadence is stilted-formal businesscrow with bird puns and a slightly precarious undercurrent ("the only ethical move", "we are running out of time", "e-kaw-nomy").
 
 ### Screen 1 — *The Hat Shop*
 
 Setting: player-crow next to a display table. Top hat sits on the table (same hat the rich crow wears). Bordered placard below the table reads `TOP HAT FOR SALE: $ 10`. HUD: `NEST WORTH: $ 1`. No storefront chrome — the hat-on-table + sign is the venue cue; an awning silhouette was tried and removed for reading as a stray gray bar.
 
 - Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash (red, persistent). After 5 taps, an escalating subtext line cycles under the flash on each subsequent tap (broke-jokes, bird puns, "have you considered onlybirds?", "stream your tapping on twitch", etc.).
-- Tap `[ continue ]` → **rich crow** (canonically **Benjamin Peck**, *CEO of Crow Automation Systems*) slides in from the right, facing the player. He already wears the same hat the player just got priced out of.
-- His pitch streams Animal-Crossing-style line-by-line in a bordered dialogue box labeled `BENJAMIN PECK`; tap mid-stream skips to end of current line, tap when complete advances to the next. Tone is stilted-formal businesscrow with bird puns and a slightly precarious undercurrent — over-titling, scarcity framing, the occasional wink at the audience:
-  - *"why hello there! i'm Benjamin Peck, Founder and CEO of Crow Automation Systems."*
-  - *"it seems you're having... some trouble with that purchase."*
-  - *"what if i told you you could earn generational wealth with just a few years of hard work?"*
-  - *"at Crow Automation Systems, we produce the Robo-Crow. it is an autonomous robot that automates all labor in the e-kaw-nomy."*
-  - *"you must decide soon. we are running out of time before you become stuck with the undercrows."*
-  - *"equity in our venerable operation is anything but abundant."*
-- After the last line, `[ accept ]` cross-fades in. There is no decline — the absent option *is* the satire.
+- Tap `[ continue ]` → **rich crow** slides in from the right, facing the player. He already wears the same hat the player just got priced out of. His identity rotates per loop — loop 1 is *Benjamin Peck, Founder and CEO of Crow Automation Systems*; subsequent loops introduce *Margaret Caw* (Caw Labs), *Edgar Crowford* (Crowford Ventures), *Olivia Beakerson* (Beaknet), *Marcus Talon* (Talonchain), *Felicity Plume* (Plume Capital), and then the list cycles. Every iteration of the doom is being sold by a new "founder" with the same template pitch.
+- His pitch streams Animal-Crossing-style line-by-line in a bordered dialogue box labeled with the founder's uppercase name; tap mid-stream skips to end of current line, tap when complete advances to the next. Template (`${name}` and `${company}` rotate per loop):
+  - *"Why hello there! I'm ${name}, Founder and CEO of ${company}."*
+  - *"It seems you're having... some trouble with that purchase."*
+  - *"What if I told you you could earn generational wealth with just a few years of hard work?"*
+  - *"At ${company}, we produce the Robo-Crow. It is an autonomous robot that automates all labor in the e-kaw-nomy."*
+  - *"You must decide soon. We are running out of time before you become stuck with the under-crows."*
+  - *"Equity in our venerable operation is anything but abundant."*
+- After the last line, `[ decline ]` and `[ accept ]` cross-fade in side-by-side. `[ decline ]` is a fake exit: each tap surfaces a different first-person reminder under the buttons (`"rent is due next month."`, `"mama crow is in the hospital remember."`, `"i told my sister i would help pay for her kaw school fees."`, etc., ~10 lines, sticks at the last). The performative refusal *is* the satire — you can perform declining indefinitely; nothing advances until you accept.
 
 ### Screen 2 — *The Factory*
 
@@ -302,11 +302,11 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 ### PR 3 — Screen 1: the hat shop (`feat/screen-1-store`)
 
-- **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
+- **Goal:** first playable beat. Top hat is too expensive, rich crow (rotating cast per loop) delivers his streaming pitch, and `[ accept ]` advances to a "screen 2 coming soon" placeholder. `[ decline ]` is a sibling button that surfaces internal-monologue excuses but doesn't actually advance.
 - **Adds:**
   - [x] `src/screens/store.ts` — hat-on-table display with `TOP HAT FOR SALE: $ 10` placard, HUD `NEST WORTH: $ 1`, player crow, rich crow entrance (CSS translate from off-right). No skip button on this screen.
   - [x] `INSUFFICIENT FUNDS.` flash on first tap
-  - [x] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
+  - [x] Streaming Animal-Crossing-style dialogue box with speaker label; `[ decline ]` and `[ accept ]` pair beneath after the last line — decline cycles internal-monologue excuses but never advances
   - [x] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
   - [x] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
 - **Acceptance:**
@@ -392,6 +392,6 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Pixel font:** Ship `DotGothic16` via Google Fonts from PR 1; system mono is the `font-display: swap` fallback.
 - **Audio:** None in v1.
-- **Screen 1 choice:** No `[ decline ]` button. Only `[ accept ]` — the absent button *is* the satire.
+- **Screen 1 choice:** `[ decline ]` exists as a sibling of `[ accept ]`, but it never advances — every tap surfaces a different first-person bill the player is on the hook for. The performative refusal is the satire; the absent *real* decline is the trap.
 - **Loop ceiling:** No in-game exit. Infinite loop until tab close.
 - **Share button:** Ship the Web Share API button — free on supported browsers, zero bytes elsewhere.

@@ -498,20 +498,50 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 3rem;
+  min-height: 5.5rem;
 }
 
-.cta-wrap .btn-primary {
+/* Only direct-child buttons (continue) get absolute-center; the
+ * decline / accept buttons live inside .cta-pair and stay in
+ * normal flex flow. */
+.cta-wrap > .btn-primary,
+.cta-pair {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.cta-wrap .btn-primary:active {
+.cta-wrap > .btn-primary:active {
   /* preserve the inherited press translate while keeping the
    * horizontal centering transform */
   transform: translateX(-50%) translateY(1px);
+}
+
+.cta-pair {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.cta-thought {
+  position: absolute;
+  top: 3.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(28rem, 90vw);
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  color: var(--color-ink-muted);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.cta-thought.shown {
+  opacity: 1;
 }
 
 .reveal {
