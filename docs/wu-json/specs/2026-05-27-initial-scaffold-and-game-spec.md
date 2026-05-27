@@ -17,7 +17,7 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 - **Mobile-first.** Touch input, single-column portrait, runs on a mid-range phone over 3G. Viewport-fit for safe areas.
 - **Visually coherent with `~/GitHub/personal/personal-website` dark mode.** Pure-black surface, white ink with opacity ramps, subtle glow via `drop-shadow` / `text-shadow`, pixel-font headings. Restrained motion.
 - **3–5 minutes per first loop, faster after.** Point lands by loop 2 or 3.
-- **Loops forever; *feels* escalating.** No length cap — the ×10 prices and balance climbing each loop are what make the player stop.
+- **Loops forever; *feels* escalating.** No length cap — the ×100 prices and balance climbing each loop are what make the player stop.
 
 ## Non-goals
 
@@ -31,16 +31,23 @@ A short, recursive interactive story-game satirizing the "permanent upper-class"
 
 ## Story (canonical script)
 
-Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow speaks with techno-optimist cadence ("we're so back", "generational", "the only ethical move").
+Dialogue is short, deadpan, lowercase except for proper nouns / brand names. The rich crow is the exception — he speaks in proper sentence case, and the formal grammar is the marker of corporate persona that sets him apart from every other voice (player, narrator, system messages). His cadence is stilted-formal businesscrow with bird puns and a slightly precarious undercurrent ("the only ethical move", "we are running out of time", "e-kaw-nomy").
 
 ### Screen 1 — *The Hat Shop*
 
-Setting: 2D hat-shop storefront silhouette. Player-crow at a counter. Top hat on display (same hat the rich crow wears). Price tag: `$ 47`. HUD balance: `$ 12`.
+Setting: player-crow next to a display table. Top hat sits on the table (same hat the rich crow wears). Bordered placard below the table reads `TOP HAT FOR SALE: $ 10`. HUD: `NEST WORTH: $ 1`. No storefront chrome — the hat-on-table + sign is the venue cue; an awning silhouette was tried and removed for reading as a stray gray bar.
 
-- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash.
-- **Rich crow** enters from the right — already wearing the same hat the player just got priced out of.
-- *"the window is closing. AI is coming for all of it. you have one shot to lock in generational wealth before the under-crows lose their last leverage. work with me. we automate crow-work. we call it Robo-Crow."*
-- One button: `[ accept ]`. There is no decline — the absent option *is* the satire.
+- Tap to buy the top hat → `INSUFFICIENT FUNDS.` flash (red, persistent). After 5 taps, an escalating subtext line cycles under the flash on each subsequent tap (broke-jokes, bird puns, "have you considered onlybirds?", "stream your tapping on twitch", etc.).
+- Tap `[ continue ]` → **rich crow** slides in from the right, facing the player. He already wears the same hat the player just got priced out of. His identity rotates per loop — loop 1 is *Benjamin Peck, Founder and CEO of Crow Automation Systems*; subsequent loops introduce *Margaret Caw* (Caw Labs), *Edgar Crowford* (Crowford Ventures), *Olivia Beakerson* (Beaknet), *Marcus Talon* (Talonchain), *Felicity Plume* (Plume Capital), and then the list cycles. Every iteration of the doom is being sold by a new "founder" with the same template pitch.
+- His pitch streams Animal-Crossing-style line-by-line in a bordered dialogue box labeled with the founder's uppercase name; tap mid-stream skips to end of current line, tap when complete advances to the next. Template (`${name}` and `${company}` rotate per loop):
+  - *"Why hello there! I'm ${name}, Founder and CEO of ${company}."*
+  - *"It seems you're having... some trouble with that purchase."*
+  - *"What if I told you you could earn generational wealth with just a few years of hard work?"*
+  - *"At ${company}, we produce the Robo-Crow. It is an autonomous robot that automates all labor in the e-kaw-nomy."*
+  - *"You must decide soon. We are running out of time before you become stuck with the under-crows."*
+  - *"Equity in our venerable operation is anything but abundant."*
+- After the last line, an **Employment Agreement popup** fades in over the scene (modal with a dimmed backdrop). The card carries the current loop's company name (`Crow Automation Systems`, `Caw Labs`, etc.), six numbered legalese terms ("Dedicate all labor, judgment, and waking hours to the development of Robo-Crow.", "Maintain a 12/12/7 in-office presence at our San Franchickso headquarters.", "Receive complimentary lunch and dinner on premises (mandatory).", "Acknowledge that the window is closing.", "Accept 1% equity in the Company, which the Company affirms is anything but abundant.", "Forfeit the right to wonder if there was another way."), two signature lines (Employee · ${name}, Founder & CEO), and `[ decline ]` / `[ sign ]` at the bottom. `[ decline ]` is a fake exit: each tap surfaces a different first-person reminder under the buttons (`"rent is due next month."`, `"mama crow is in the hospital remember."`, etc., ~10 lines, loops indefinitely). Only `[ sign ]` actually signs the contract. The performative refusal *is* the satire — you can perform declining indefinitely; nothing advances until you sign.
+- Tap `[ sign ]` → contract fades out, dialogue box re-enables, and the rich crow delivers three celebratory follow-up lines in the same proper-sentence-case voice (`"Congratulations. I knew you weren't incompetent!"`, `"Cheers to a future of hard working fortune, and fortunate hard work."`, `"See you in the office on Sunday my love."`). Tap past the last line to advance to Screen 2.
 
 ### Screen 2 — *The Factory*
 
@@ -59,7 +66,7 @@ Setting: player-crow on a couch in front of a TV. Chyron cycles, pixel font, all
 - `ROBO-CROW Q3 EARNINGS BEAT`
 - `FOOD PRICES UP 312% Y/Y`
 
-HUD has jumped (e.g. `$ 41,200`).
+HUD has jumped (e.g. `$ 100` — the next loop's starting balance).
 
 - Tap to advance. No dialogue.
 - Faint footnote in `--color-ink-faint`: *"the chyron loops."*
@@ -73,7 +80,7 @@ Setting: black-on-black starfield (low-opacity white dots twinkling via opacity 
 
 ### Screen 5 — *The Hat Shop (Again)*
 
-Same layout as Screen 1, with bank balance and hat price both ~10× higher (relative gap unchanged or worse — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
+Same layout as Screen 1, with bank balance and hat price both 100× higher (relative gap unchanged — the player still can't afford the hat, even after a generational windfall). Tapping advance re-enters Screen 1 of the next loop. Rich crow returns, identical pitch, with `"the window is closing — again."` on loop ≥ 2.
 
 ---
 
@@ -83,8 +90,10 @@ The numbers do the work. No per-loop visual decay — the rising prices alongsid
 
 | Element | Change per loop |
 |---|---|
-| Bank balance (start of loop) | × ~10 |
-| Hat price | × ~10 |
+| Bank balance (start of loop) | × 100 |
+| Hat price | × 100 |
+
+Loop 1: balance `$ 1`, hat `$ 10`. Loop 2: `$ 100` / `$ 1,000`. Loop 3: `$ 10,000` / `$ 100,000`. The couch (Screen 3) shows next-loop's start balance as the post-launch HUD.
 
 The loop count is **not** displayed anywhere in the UI. The player should realize the recursion themselves from the climbing prices and the repeating script. Telling them "loop 2 / ∞" lets them off the hook — the discovery is the satire. `loop` is still tracked in state so `deriveLoopValues` can scale the numbers; it just never reaches the DOM.
 
@@ -294,13 +303,13 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 ### PR 3 — Screen 1: the hat shop (`feat/screen-1-store`)
 
-- **Goal:** first playable beat. Top hat is too expensive, rich crow appears (wearing the same hat), single `[ accept ]` advances to a "screen 2 coming soon" placeholder.
+- **Goal:** first playable beat. Top hat is too expensive, rich crow (rotating cast per loop) delivers his streaming pitch, and `[ accept ]` advances to a "screen 2 coming soon" placeholder. `[ decline ]` is a sibling button that surfaces internal-monologue excuses but doesn't actually advance.
 - **Adds:**
-  - [ ] `src/screens/store.ts` — storefront silhouette (single SVG path), price tag `$ 47`, HUD `$ 12`, player crow, rich crow entrance (CSS translate from off-right)
-  - [ ] `INSUFFICIENT FUNDS.` flash on first tap
-  - [ ] Dialogue panel at bottom; single `[ accept ]` button beneath (no decline — the absence is the satire)
-  - [ ] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
-  - [ ] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
+  - [x] `src/screens/store.ts` — hat-on-table display with `TOP HAT FOR SALE: $ 10` placard, HUD `NEST WORTH: $ 1`, player crow, rich crow entrance (CSS translate from off-right). No skip button on this screen.
+  - [x] `INSUFFICIENT FUNDS.` flash on first tap
+  - [x] Streaming Animal-Crossing-style dialogue box with speaker label; **Employment Agreement popup** appears after the last line with `[ decline ]` / `[ accept ]` inside — decline cycles internal-monologue excuses but never advances
+  - [x] Wire `main.ts` to mount Screen 1 by default, removing kitchen sink
+  - [x] Placeholder "screen 2 coming soon" as the next screen so advance works end-to-end in this PR
 - **Acceptance:**
   - [ ] On mobile, price tag, HUD, both crows, dialogue, and the single button fit one viewport — no scroll
   - [ ] Rich crow enters with a smooth transform; reduced-motion just fades it in
@@ -326,7 +335,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Adds:**
   - [ ] `src/screens/couch.ts` — couch silhouette, TV silhouette with text region
   - [ ] Chyron cycler — array of 4 strings in pixel font, swapped every ~1.8 s via `setInterval`, cleared on cleanup. No animation library.
-  - [ ] HUD shows post-launch balance (`$ 41,200`) from `deriveLoopValues(1)` for loop 1
+  - [ ] HUD shows post-launch balance (`$ 100`) from `deriveLoopValues(loop + 1).balance` for loop 1
   - [ ] Faint footnote: *"the chyron loops."*
 - **Acceptance:**
   - [ ] Cleanup clears the interval (unmount + remount doesn't leak)
@@ -351,7 +360,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - **Goal:** make the recursion real. Screen 4 advances back into the store with bumped numbers and visible escalation. This is where the satire lands.
 - **Adds:**
   - [ ] State: increment `loop` on screen-4 → screen-0 transition, persist via `saveLoop()`
-  - [ ] `deriveLoopValues(loop)` returns ×10 balance/price, monotonically
+  - [ ] `deriveLoopValues(loop)` returns ×100 balance/price, monotonically
   - [ ] Rich crow opening swaps to `"— again."` on loop ≥ 2
 - **Acceptance:**
   - [ ] Hard refresh mid-loop-3 returns to screen 1 of loop 3 (not loop 1)
@@ -384,6 +393,6 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 
 - **Pixel font:** Ship `DotGothic16` via Google Fonts from PR 1; system mono is the `font-display: swap` fallback.
 - **Audio:** None in v1.
-- **Screen 1 choice:** No `[ decline ]` button. Only `[ accept ]` — the absent button *is* the satire.
+- **Screen 1 choice:** `[ decline ]` exists as a sibling of `[ accept ]`, but it never advances — every tap surfaces a different first-person bill the player is on the hook for. The performative refusal is the satire; the absent *real* decline is the trap.
 - **Loop ceiling:** No in-game exit. Infinite loop until tab close.
 - **Share button:** Ship the Web Share API button — free on supported browsers, zero bytes elsewhere.
