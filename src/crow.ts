@@ -3,11 +3,15 @@ export type CrowVariant = 'player' | 'rich' | 'background' | 'robo';
 // Reaper-crow silhouette inspired by Death's Door: rounded head,
 // triangular beak (right), tail-feather notches at the hem, two
 // stubby legs integrated into the path itself (notch tips at
-// x=60 and x=40 extend down as flat rectangular pegs) so the
-// silhouette is one continuous fill — no overlap alpha-stacking
-// on the translucent background variant. Eye is a hole via
-// fill-rule="evenodd".
-const CROW_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M50 8C62 8 70 17 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C30 17 38 8 50 8ZM38 28a8 8 0 1 0 16 0a8 8 0 1 0-16 0Z"/></svg>`;
+// x=60 and x=40 extend down as flat rectangular pegs).
+//
+// The eye is rendered as two stacked sibling shapes painted in
+// `var(--color-surface)` on top of the body — an open circle and
+// a closed horizontal slash. CSS toggles their opacity to drive
+// the periodic blink (see `.crow-eye-open` / `.crow-eye-closed`
+// in index.css). They sit on the dark surface so the surface-
+// coloured fill reads as a hole through the white silhouette.
+const CROW_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M50 8C62 8 70 17 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C30 17 38 8 50 8Z"/><circle class="crow-eye-open" fill="var(--color-surface)" cx="46" cy="28" r="8"/><path class="crow-eye-closed" fill="var(--color-surface)" d="M38 27L54 27L54 29L38 29Z"/></svg>`;
 
 // Rich crow: same body with a stovepipe top hat (crown +
 // wider brim) integrated into the silhouette as one continuous

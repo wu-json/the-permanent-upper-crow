@@ -161,6 +161,48 @@
   height: 128px;
 }
 
+/* Player crow blink. The eye is two stacked SVG shapes — an
+ * open circle and a closed slash, both painted in the surface
+ * colour to read as holes through the body. The slash is hidden
+ * by default; both animations run on a long cycle so the blink
+ * is a brief pulse every few seconds. Rich and background crows
+ * use the older single-path eye and aren't selected here. */
+.crow-eye-closed {
+  opacity: 0;
+}
+
+.crow-player .crow-eye-open {
+  animation: crow-blink-open 5.5s linear infinite;
+}
+
+.crow-player .crow-eye-closed {
+  animation: crow-blink-closed 5.5s linear infinite;
+}
+
+@keyframes crow-blink-open {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94%,
+  97% {
+    opacity: 0;
+  }
+}
+
+@keyframes crow-blink-closed {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  94%,
+  97% {
+    opacity: 1;
+  }
+}
+
 /* Mirror modifier — flip the SVG inside .crow horizontally so
  * the rich crow can face the player crow from the right side.
  * The transform lives on the inner SVG so any column-level
@@ -1826,6 +1868,11 @@
 @media (prefers-reduced-motion: reduce) {
   .crow-glow-player,
   .crow-glow-rich {
+    animation: none;
+  }
+
+  .crow-player .crow-eye-open,
+  .crow-player .crow-eye-closed {
     animation: none;
   }
 
