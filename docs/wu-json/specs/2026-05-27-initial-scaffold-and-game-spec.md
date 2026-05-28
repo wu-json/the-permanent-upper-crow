@@ -62,19 +62,30 @@ Setting: a horizontal conveyor of Robo-Crow silhouettes moving across the frame.
   - *"Great work. I'm looking forward to enjoying my— I mean our fortune very soon in our public offering."*
 - Tap past the last line to advance to Screen 3. The conveyor keeps moving the whole time.
 
-### Screen 3 — *The Couch*
+### Screen 3 — *The Newscast*
 
-Setting: player-crow on a couch in front of a TV. Chyron cycles, pixel font, all-caps:
+Setting: first-person view of a TV from the couch — the TV frame fills most of the viewport, the player crow is not visible (you ARE the player, slumped on the couch). Inside the TV, **Trisha Cawkanawa** (a play on Tricia Takanawa from Family Guy) anchors **Caw News Network** ("CNN") from a small news desk. A `LIVE` indicator pulses in the upper-corner of the TV; a chyron cycles headlines along the bottom of the TV screen.
+
+HUD: post-launch `NEST WORTH: $ 100` (loop 1; the next loop's starting balance, from `deriveLoopValues(loop + 1).balance`).
+
+Trisha's report streams in the same Animal-Crossing dialogue box used on screens 1 and 2 (speaker label `TRISHA CAWKANAWA`). The current loop's company name (`${company}` — `Crow Automation Systems` on loop 1, then `Caw Labs`, `Crowford Ventures`, etc.) is attributed for both the good news (earnings, productivity) and the bad news (unemployment, inflation) — the broadcast IS the corporate PR feed:
+
+- *"Good evening. I'm Trisha Cawkanawa, reporting live for Caw News Network — brought to you by ${company}."*
+- *"Tonight's top story: the under-crow job market has officially collapsed."*
+- *"${company} reports record Q3 earnings, beating every analyst expectation."*
+- *"Analysts credit ${company}'s Robo-Crow rollout for an unprecedented productivity surge."*
+- *"Food prices are up 312% year over year. ${company} has issued a statement assuring viewers that this is, quote, 'fine'."*
+- *"The under-crows are protesting outside our studio. We will not be covering it."*
+- *"Back to you."*
+
+Chyron strings (cycle every ~1.8s):
 
 - `JOB MARKET COLLAPSES`
 - `UNDER-CROWS PROTEST`
 - `ROBO-CROW Q3 EARNINGS BEAT`
 - `FOOD PRICES UP 312% Y/Y`
 
-HUD has jumped (e.g. `$ 100` — the next loop's starting balance).
-
-- Tap to advance. No dialogue.
-- Faint footnote in `--color-ink-faint`: *"the chyron loops."*
+Tap past Trisha's last line to advance to Screen 4.
 
 ### Screen 4 — *The Spaceship*
 
@@ -174,7 +185,7 @@ the-permanent-upper-crow/
 │   ├── screens/
 │   │   ├── store.ts             # screen 1 & 5 (parameterized by loop)
 │   │   ├── factory.ts           # screen 2
-│   │   ├── couch.ts             # screen 3
+│   │   ├── news.ts              # screen 3 (newscast)
 │   │   └── ship.ts              # screen 4
 │   ├── crow.ts                  # inline SVG crow poses
 │   ├── ui.ts                    # HUD, buttons, skip control
@@ -200,7 +211,7 @@ export interface Screen {
 
 ```ts
 interface GameState {
-  screen: 0 | 1 | 2 | 3 | 4;     // 0=store, 1=factory, 2=couch, 3=ship, 4=store-again
+  screen: 0 | 1 | 2 | 3 | 4;     // 0=store, 1=factory, 2=news, 3=ship, 4=store-again
   loop: number;                  // 1, 2, 3, …
   balance: number;               // pure function of loop
   hatPrice: number;              // pure function of loop
@@ -213,7 +224,7 @@ Only `loop` needs persisting; balance and price derive from it.
 
 `main.ts` reads URL query params on load so you can jump straight into a screen without playing through:
 
-- `?screen=<0..3 | store | factory | couch | ship>` — mount that screen as the entry point
+- `?screen=<0..3 | store | factory | news | ship>` — mount that screen as the entry point
 - `?loop=<n>` — start at a specific loop (drives the rich-crow cast rotation and the ×100 number scaling, useful for testing later loops without grinding)
 
 Both are no-ops if absent; harmless to leave shipped in production.
@@ -264,7 +275,7 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
 - [x] **PR 2** — Shared primitives
 - [ ] **PR 3** — Screen 1: the hat shop
 - [ ] **PR 4** — Screen 2: the factory
-- [ ] **PR 5** — Screen 3: the couch
+- [ ] **PR 5** — Screen 3: the newscast
 - [ ] **PR 6** — Screen 4: the spaceship
 - [ ] **PR 7** — Loop wiring + Screen 5
 - [ ] **PR 8** — Polish
@@ -345,17 +356,19 @@ Every PR after scaffold gets sanity-checked at 375×812 (iPhone-class) in additi
   - [ ] Bundle delta is small — most of the new code is the dialogue extraction, which is shared with Screen 1
 - **Dependencies:** PR 3.
 
-### PR 5 — Screen 3: the couch (`feat/screen-3-couch`)
+### PR 5 — Screen 3: the newscast (`feat/screen-3-news`)
 
-- **Goal:** rich-but-world-on-fire beat. Couch + TV + cycling chyron.
+- **Goal:** rich-but-world-on-fire beat. First-person TV view with Trisha Cawkanawa anchoring Caw News Network from inside the TV frame; cycling chyron at the bottom.
 - **Adds:**
-  - [ ] `src/screens/couch.ts` — couch silhouette, TV silhouette with text region
+  - [ ] `src/screens/news.ts` — large TV-frame silhouette dominating the viewport; inside, a reporter crow at a small news desk, a pulsing `LIVE` indicator in the upper corner, and a chyron strip at the bottom of the TV
+  - [ ] Trisha Cawkanawa's six-line report uses the shared `createDialogue` primitive (speaker label `TRISHA CAWKANAWA`); tap past the last line advances to Screen 4 placeholder
   - [ ] Chyron cycler — array of 4 strings in pixel font, swapped every ~1.8 s via `setInterval`, cleared on cleanup. No animation library.
   - [ ] HUD shows post-launch balance (`$ 100`) from `deriveLoopValues(loop + 1).balance` for loop 1
-  - [ ] Faint footnote: *"the chyron loops."*
+  - [ ] Add a `couch`/`news` entry to `?screen=` in `main.ts` so dev jump still works
 - **Acceptance:**
-  - [ ] Cleanup clears the interval (unmount + remount doesn't leak)
-  - [ ] DotGothic16 renders in the chyron; system-mono swap fallback also legible at iPhone size
+  - [ ] Cleanup clears the chyron interval and dialogue timers (unmount + remount doesn't leak)
+  - [ ] DotGothic16 renders in the chyron + speaker label; system-mono swap fallback also legible at iPhone size
+  - [ ] Tap past Trisha's last line advances to the placeholder
 - **Dependencies:** PR 4.
 
 ### PR 6 — Screen 4: the spaceship (`feat/screen-4-ship`)
