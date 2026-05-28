@@ -84,6 +84,28 @@ export function createGithubLink(href: string): HTMLAnchorElement {
   return link;
 }
 
+// 5-petal spider lily — the personal-website flower mark
+// (jasonwu.ink). Same geometry as the site's favicon: five
+// ellipse petals at 72° increments around a centered disc,
+// drawn into a 100×100 viewBox. fill="currentColor" lets the
+// chip's text color drive the petals so it matches the other
+// corner icons.
+const ICON_FLOWER = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor"><ellipse cx="50" cy="22" rx="10" ry="22" transform="rotate(0 50 50)"/><ellipse cx="50" cy="22" rx="10" ry="22" transform="rotate(72 50 50)"/><ellipse cx="50" cy="22" rx="10" ry="22" transform="rotate(144 50 50)"/><ellipse cx="50" cy="22" rx="10" ry="22" transform="rotate(216 50 50)"/><ellipse cx="50" cy="22" rx="10" ry="22" transform="rotate(288 50 50)"/><circle cx="50" cy="50" r="8"/></svg>`;
+
+export function createWebsiteLink(href: string): HTMLAnchorElement {
+  const link = document.createElement('a');
+  link.classList.add('btn-corner', 'btn-website');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.setAttribute(
+    'aria-label',
+    "read the author's blog post about this game in a new tab",
+  );
+  link.innerHTML = ICON_FLOWER;
+  return link;
+}
+
 // Lucide-style speaker silhouette + two arcs ("Volume2") and
 // the muted variant with an X to the right ("VolumeX"). Both
 // drawn into a 24×24 viewBox so they share the same aspect

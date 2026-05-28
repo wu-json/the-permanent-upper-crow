@@ -7,7 +7,12 @@ import { factoryScreen } from './screens/factory';
 import { newsScreen } from './screens/news';
 import { shipScreen } from './screens/ship';
 import { arrivalScreen } from './screens/arrival';
-import { createGithubLink, createMuteButton, createResetButton } from './ui';
+import {
+  createGithubLink,
+  createMuteButton,
+  createResetButton,
+  createWebsiteLink,
+} from './ui';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('#app not found');
@@ -180,6 +185,11 @@ const resetBtn = createResetButton(() => {
 });
 resetBtn.style.display = 'none';
 cornerStack.appendChild(resetBtn);
+cornerStack.appendChild(
+  createWebsiteLink(
+    'https://www.jasonwu.ink/signals/2026-05-27-permanent-upper-class?theme=dark',
+  ),
+);
 cornerStack.appendChild(
   createGithubLink('https://github.com/wu-json/the-permanent-upper-crow'),
 );
