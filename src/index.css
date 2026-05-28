@@ -815,7 +815,10 @@
   font-size: 0.72rem;
   letter-spacing: 0.05em;
   line-height: 1.4;
-  color: var(--color-ink-muted);
+  color: var(--color-error);
+  text-shadow:
+    0 0 6px var(--color-error-glow),
+    0 0 14px var(--color-error-glow);
   text-align: center;
   opacity: 0;
   transition: opacity 350ms ease;

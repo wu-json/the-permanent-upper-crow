@@ -107,6 +107,55 @@ export function playBlip(): void {
   osc.stop(now + 0.05);
 }
 
+// Three-note ascending square-wave arpeggio for the post-sign
+// flourish. Stays in the low/mid register so it matches the rest
+// of the audio palette — not a music-box jingle, just a short
+// chunky "you did it (you did not)" tag.
+export function playCelebrate(): void {
+  if (muted) return;
+  const c = ensureContext();
+  if (!c) return;
+  const now = c.currentTime;
+  // Roughly G3 → B3 → D4 — a major arpeggio. Notes overlap
+  // slightly so the run reads as one flourish.
+  const notes = [196, 247, 330];
+  notes.forEach((freq, i) => {
+    const t = now + i * 0.09;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.055, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.16);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t);
+    osc.stop(t + 0.18);
+  });
+}
+
+// "Denied" thud — a single low square-wave note with a clear
+// downward bend. Used when the player taps the top hat and the
+// INSUFFICIENT FUNDS flash fires. Lower and longer than the
+// advance boop so it reads as rejection rather than progression.
+export function playDenied(): void {
+  if (muted) return;
+  const c = ensureContext();
+  if (!c) return;
+  const now = c.currentTime;
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(110, now);
+  osc.frequency.linearRampToValueAtTime(80, now + 0.12);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.07, now + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.18);
+  osc.connect(gain).connect(c.destination);
+  osc.start(now);
+  osc.stop(now + 0.2);
+}
+
 // Low "boop" on advance — a single square-wave note with a small
 // downward bend. No upward chirp on purpose; the rising tone read
 // too jingly against the rest of the audio.

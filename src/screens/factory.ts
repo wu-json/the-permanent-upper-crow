@@ -152,9 +152,10 @@ export const factoryScreen: Screen = {
     )!;
     const warningActions = document.createElement('div');
     warningActions.classList.add('warning-actions');
-    warningActions.appendChild(
-      createPrimaryButton('understood', () => closeWarning()),
+    const understoodBtn = createPrimaryButton('understood', () =>
+      closeWarning(),
     );
+    warningActions.appendChild(understoodBtn);
     warningCard.appendChild(warningActions);
 
     root.append(hudWrap, scene, dialogue.el, warning);
@@ -166,6 +167,9 @@ export const factoryScreen: Screen = {
     };
     const closeWarning = () => {
       warning.classList.remove('shown');
+      // Drop focus off the button so subsequent Enter/Space
+      // hits the dialogue advance instead of the dismissed btn.
+      understoodBtn.blur();
       dialogue.setActive(true);
     };
     cautionBtn.addEventListener('click', openWarning);

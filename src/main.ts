@@ -115,6 +115,10 @@ function mount(idx: number): void {
   if (cleanup) cleanup();
   app!.innerHTML = '';
   currentIdx = idx;
+  // Reset chip is only meaningful when the player is back at the
+  // hat shop on a later loop. Hide it on every other screen, and
+  // on loop 1 where there is nothing to reset.
+  resetBtn.style.display = idx === 0 && state.loop > 1 ? '' : 'none';
   const ctx: GameContext = {
     state,
     advance: () => mount(currentIdx + 1),
@@ -126,17 +130,19 @@ function mount(idx: number): void {
 // swaps don't tear them down; CSS pins them to the viewport's
 // top-left (reset) and top-right (mute) with safe-area-inset
 // padding so they sit below the notch on mobile.
-document.body.appendChild(
-  createResetButton(() => {
-    state.loop = 1;
-    saveLoop(1);
-    const refreshed = deriveLoopValues(1);
-    state.balance = refreshed.balance;
-    state.hatPrice = refreshed.hatPrice;
-    spawnLoopVeil();
-    mount(0);
-  }),
-);
+// The reset chip starts hidden — mount() shows it only when the
+// player is on the store screen at loop ≥ 2.
+const resetBtn = createResetButton(() => {
+  state.loop = 1;
+  saveLoop(1);
+  const refreshed = deriveLoopValues(1);
+  state.balance = refreshed.balance;
+  state.hatPrice = refreshed.hatPrice;
+  spawnLoopVeil();
+  mount(0);
+});
+resetBtn.style.display = 'none';
+document.body.appendChild(resetBtn);
 document.body.appendChild(createMuteButton());
 
 mount(dev.startIdx);
