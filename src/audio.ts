@@ -94,6 +94,26 @@ export function unlockAudio(): void {
   ensureContext();
 }
 
+// iOS Safari suspends the AudioContext when the tab is
+// backgrounded (app switch, lock screen, new tab). On return,
+// `ensureContext()` only resumes when a fresh sound is triggered
+// — which never happens on screens whose audio is pure ambient
+// loops (conveyor, crowd, ship), so they come back muted. Wake
+// the context as soon as the page is visible again. `pageshow`
+// covers the bfcache restore case where `visibilitychange` may
+// not fire.
+if (typeof window !== 'undefined') {
+  const wake = () => {
+    if (ctx && ctx.state === 'suspended') {
+      void ctx.resume();
+    }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') wake();
+  });
+  window.addEventListener('pageshow', wake);
+}
+
 // Low square-wave bleep in the Undertale voice palette — short,
 // bit-crunchy, lives around 180–220 Hz so the dialogue reads as
 // chunky text rather than a music-box jingle. Small pitch jitter
