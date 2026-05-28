@@ -1,6 +1,12 @@
-# the permanent upper-crow
+# The Permanent Upper Crow
 
-A tiny static, single-button story-game about crows, AI, and the "permanent upper-class" exit. Vite + vanilla TypeScript + Tailwind v4. See [`docs/wu-json/specs/2026-05-27-initial-scaffold-and-game-spec.md`](docs/wu-json/specs/2026-05-27-initial-scaffold-and-game-spec.md) for the game spec and PR plan.
+This is my social commentary on the "Permanent Upper Class" philosophical virus that has spread through San Francisco tech communities like the plague in the last year or so.
+
+While the game tells a grim story, my goal with this is just to show how ridiculous this way of thinking is. I'm actually more optimistic that humans will find a way to prevent this future but if we don't then I suppose none of us will don top hats for eternity.
+
+Ironically, this piece is completely vibe-coded as you can tell by the commit history. I was nothing but a creative art director here, if even that.
+
+## Running The Permanent Upper Crow Locally
 
 ```sh
 bun install
