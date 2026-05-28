@@ -16,7 +16,9 @@ const CAPTAIN_LINES: readonly string[] = [
   'On board this vessel is the entire permanent upper-crow class.',
   'The uncivilized violent under-crows could not follow us.',
   'Our destination is a fresh, untouched planet. There, we will finally live in peace.',
+  'We will be arriving shortly...',
   'We earned this.',
+  '...',
 ];
 
 // Visual budget — kept low because all of these are absolutely
