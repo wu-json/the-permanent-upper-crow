@@ -36,7 +36,21 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
 
   const speakerEl = document.createElement('div');
   speakerEl.classList.add('dialogue-speaker');
-  speakerEl.textContent = opts.speaker;
+
+  const speakerName = document.createElement('span');
+  speakerName.classList.add('dialogue-speaker-name');
+  speakerName.textContent = opts.speaker;
+
+  // Keyboard hint — only visible on desktop (hover + fine
+  // pointer) via the media query in index.css. Mobile users get
+  // an unadorned speaker label.
+  const kbdHint = document.createElement('span');
+  kbdHint.classList.add('dialogue-kbd-hint');
+  kbdHint.setAttribute('aria-hidden', 'true');
+  kbdHint.innerHTML =
+    '<kbd>enter</kbd><span class="dialogue-kbd-sep">or</span><kbd>space</kbd>';
+
+  speakerEl.append(speakerName, kbdHint);
 
   const body = document.createElement('div');
   body.classList.add('dialogue-body');
@@ -60,6 +74,11 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
   let streamTimer: number | null = null;
   let streaming = false;
   let active = true;
+  // Guards the advance callback from firing twice for the same
+  // line set. Without it, a fast double-tap (or Enter held down)
+  // past the last line would fire `advanceCb` more than once and
+  // skip the next screen. Cleared whenever `play()` is called.
+  let advanced = false;
   let advanceCb: (() => void) | null = null;
 
   const clearStream = () => {
@@ -100,19 +119,47 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     onLineComplete();
   };
 
-  const onClick = () => {
+  const tryAdvance = () => {
     if (!active) return;
+    // Nothing to do until the screen calls play() with lines.
+    // Guards against keypresses landing in the gap between mount
+    // and the first dialogue.play().
+    if (lines.length === 0) return;
+    if (advanced) return;
     if (streaming) {
       finishCurrent();
     } else if (lineIdx < lines.length - 1) {
       lineIdx += 1;
       streamCurrent();
     } else {
+      advanced = true;
       advanceCb?.();
     }
   };
 
-  el.addEventListener('click', onClick);
+  const onKeydown = (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    // Don't hijack Enter/Space when a focusable control owns it
+    // — focused buttons should still activate on their own keys.
+    const target = e.target as HTMLElement | null;
+    if (
+      target &&
+      (target.tagName === 'BUTTON' ||
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+    if (!active) return;
+    if (lines.length === 0) return;
+    // Stops Space from scrolling the page.
+    e.preventDefault();
+    tryAdvance();
+  };
+
+  el.addEventListener('click', tryAdvance);
+  window.addEventListener('keydown', onKeydown);
 
   return {
     el,
@@ -120,10 +167,11 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
       clearStream();
       lines = newLines;
       lineIdx = 0;
+      advanced = false;
       streamCurrent();
     },
     setSpeaker(name) {
-      speakerEl.textContent = name;
+      speakerName.textContent = name;
     },
     setActive(value) {
       active = value;
@@ -139,7 +187,8 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     },
     cleanup() {
       clearStream();
-      el.removeEventListener('click', onClick);
+      el.removeEventListener('click', tryAdvance);
+      window.removeEventListener('keydown', onKeydown);
     },
   };
 }
