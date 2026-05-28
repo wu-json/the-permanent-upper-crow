@@ -186,6 +186,66 @@
   color: var(--color-ink-soft);
 }
 
+/* Persistent corner chips — reset on the top-left, mute on the
+ * top-right — both pinned to the viewport with safe-area-inset
+ * padding so on notched phones they sit below the status bar
+ * instead of under it. z-index 60 puts them above the loop-veil
+ * (z-index 50) so the player can always reach them. */
+.btn-corner {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 0.6rem);
+  z-index: 60;
+  appearance: none;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--color-ink-faint);
+  font-family: var(--font-pixel);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease,
+    opacity 200ms ease;
+}
+
+.btn-corner:hover,
+.btn-corner:focus-visible {
+  outline: 0;
+  color: var(--color-ink);
+  border-color: var(--color-ink-soft);
+}
+
+.btn-corner:active {
+  transform: translateY(1px);
+}
+
+.btn-reset {
+  left: calc(env(safe-area-inset-left, 0px) + 0.6rem);
+  padding: 0.3rem 0.55rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+}
+
+.btn-mute {
+  right: calc(env(safe-area-inset-right, 0px) + 0.6rem);
+  padding: 0.3rem 0.45rem;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-mute svg {
+  display: block;
+  width: 20px;
+  height: auto;
+}
+
+.btn-mute.is-muted {
+  color: var(--color-ink-muted);
+  border-color: var(--color-ink-trace);
+}
+
 /* ── Screen layout ───────────────────────────────────────────────── */
 
 .screen {
