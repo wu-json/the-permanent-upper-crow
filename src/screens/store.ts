@@ -306,9 +306,11 @@ export const storeScreen: Screen = {
       contract.classList.remove('shown');
 
       // Turn the persistent INSUFFICIENT FUNDS red flash into a
-      // green "CONGRATULATIONS ON BEING RICH (in the future)"
-      // banner, hide the sub-snark, and spawn a confetti burst.
-      flashMain.textContent = 'CONGRATULATIONS ON (FUTURE YOU) BEING RICH';
+      // green "CONGRATULATIONS ON (FUTURE YOU) BEING RICH" banner.
+      // The "(FUTURE YOU)" parenthetical is muted to underscore the
+      // satire — you're not rich now, that's for some other you.
+      flashMain.innerHTML =
+        'CONGRATULATIONS ON <span class="insufficient-aside">(FUTURE YOU)</span> BEING RICH';
       flashSub.classList.remove('shown');
       flash.classList.add('success');
       spawnConfetti(flash);

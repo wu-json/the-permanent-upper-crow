@@ -429,6 +429,17 @@
   line-height: 1.3;
 }
 
+/* Parenthetical aside inside the success banner ("(FUTURE YOU)").
+ * Muted gray and shrunken so the satire of the unreachable
+ * future lands — everyone's rich on paper, just not the you
+ * reading this. */
+.insufficient-aside {
+  color: var(--color-ink-muted);
+  text-shadow: none;
+  font-size: 0.55em;
+  letter-spacing: 0.08em;
+}
+
 /* ── Confetti burst ──────────────────────────────────────────────── */
 
 .confetti-burst {
@@ -705,32 +716,264 @@
 
 /* ── Factory screen ──────────────────────────────────────────────── */
 
-.factory-scene {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: end;
-  justify-items: center;
-  gap: 0.5rem;
+/* Drop the mobile-frame cap on this screen so the conveyor can
+ * actually hit the viewport's right edge instead of clipping at
+ * the centered 500px column. Vertical cap also off so the scene
+ * doesn't float in a too-short box on tall viewports. */
+.screen-factory {
+  max-width: none;
+  max-height: none;
 }
 
-.factory-col {
+/* Stacked vertically: machine + conveyor up top, player/rich
+ * pair on the ground below. Keeps narrow screens uncramped and
+ * lets the conveyor always run the full viewport width.
+ *
+ * The scene + dialogue are centered as a group in the available
+ * height via auto margins (see .screen-factory rules below) —
+ * not flex-grown, so the dialogue sits directly under the
+ * pair instead of being pinned to the viewport floor. */
+.factory-scene {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
+  align-items: stretch;
+  gap: 1.5rem;
+  margin-top: auto;
 }
 
-.factory-col .crow {
+.screen-factory > .dialogue-box {
+  margin-bottom: auto;
+}
+
+/* Player + rich crow talking. Centered horizontally below the
+ * factory line. Rich crow is mirrored via .crow-mirrored so
+ * they face each other across the gap. */
+.factory-pair {
+  align-self: center;
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+}
+
+.factory-pair .crow {
+  width: 64px;
+  height: 92px;
   margin-bottom: -3px;
 }
 
-.factory-conveyor {
+.factory-pair .crow-rich {
+  height: 102px;
+}
+
+/* Named factory box (`cast.company`) + conveyor that stretches
+ * off the right edge of the screen. Negative right margin
+ * defeats the .screen's right padding so the belt visually
+ * terminates at the viewport edge. */
+.factory-line {
+  display: flex;
+  align-items: flex-end;
+  margin-right: -1.25rem;
+}
+
+.factory-box {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 170px;
+  height: 150px;
+  padding: 0.85rem 0.7rem;
+  box-sizing: border-box;
+  border: 1px solid var(--color-ink-soft);
+  background: rgba(0, 0, 0, 0.78);
+  font-family: var(--font-pixel);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.factory-box-company {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.factory-box-product {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  color: var(--color-ink-muted);
+  border-top: 1px solid var(--color-ink-hair);
+  padding-top: 0.55rem;
   width: 100%;
+}
+
+/* Two tubes sticking out of the top of the machine, each puffing
+ * a cartoonish smoke ring on a loop. Stagger keeps them out of
+ * phase. */
+.factory-box-tubes {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  pointer-events: none;
+}
+
+.factory-box-tube {
+  position: relative;
+  width: 10px;
+  height: 18px;
+  background: var(--color-ink-soft);
+}
+
+/* Asymmetry on purpose — the second tube is fatter and shorter
+ * so the machine reads more "haphazardly bolted together" and
+ * less "perfectly engineered". */
+.factory-box-tube:nth-child(2) {
+  width: 14px;
+  height: 14px;
+}
+
+.factory-box-puff {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-ink-soft);
+  opacity: 0;
+  transform: translate(-50%, 0) scale(0.3);
+  animation: factory-smoke 2.6s ease-out infinite;
+}
+
+.factory-box-tube:nth-child(2) .factory-box-puff {
+  animation-delay: 1.3s;
+}
+
+@keyframes factory-smoke {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.3);
+  }
+  18% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -38px) scale(1.6);
+  }
+}
+
+/* Caution badge tucked in the bottom-left corner of the machine —
+ * because it is, in fact, an autonomous worker replacement. */
+.factory-box-caution {
+  position: absolute;
+  bottom: 5px;
+  left: 7px;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: transform 80ms ease;
+}
+
+.factory-box-caution:hover,
+.factory-box-caution:focus-visible {
+  outline: 0;
+  text-shadow: 0 0 8px var(--color-glow);
+}
+
+.factory-box-caution:active {
+  transform: translateY(1px);
+}
+
+/* ── Warning popup ───────────────────────────────────────────────── */
+
+.warning-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.warning-card {
+  width: 100%;
+  max-width: 26rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-ink-soft);
+  padding: 1rem 1.1rem 0.9rem;
+  font-family: var(--font-pixel);
+  color: var(--color-ink);
+  box-sizing: border-box;
+}
+
+.warning-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-bottom: 1px solid var(--color-ink-faint);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.warning-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.warning-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: var(--color-ink);
+}
+
+.warning-list {
+  margin: 0 0 0.9rem;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.warning-list li {
+  margin-bottom: 0.5rem;
+}
+
+.warning-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--color-ink-hair);
+}
+
+.factory-conveyor {
+  flex: 1 1 0;
   min-width: 0;
-  height: 88px;
   overflow: hidden;
+  height: 150px;
+  position: relative;
   border-top: 1px solid var(--color-ink-faint);
   border-bottom: 1px solid var(--color-ink-faint);
   background: linear-gradient(
@@ -739,37 +982,40 @@
     var(--color-ink-hair) 50%,
     transparent
   );
-  position: relative;
 }
 
 .factory-strip {
   display: flex;
   align-items: flex-end;
-  gap: 1.25rem;
-  padding: 0 0.75rem;
   height: 100%;
   width: max-content;
-  transform: translateX(-50%);
+  /* --copy-width and --roll-duration are set inline by factory.ts
+   * (derived from viewport width so wider conveyors don't make
+   * the belt sprint). */
+  transform: translateX(calc(-1 * var(--copy-width, 50%)));
   will-change: transform;
-}
-
-.factory-conveyor.running .factory-strip {
-  animation: factory-roll 5.5s linear infinite;
+  animation: factory-roll var(--roll-duration, 8s) linear infinite;
 }
 
 @keyframes factory-roll {
   from {
-    transform: translateX(-50%);
+    transform: translateX(calc(-1 * var(--copy-width, 50%)));
   }
   to {
     transform: translateX(0);
   }
 }
 
+/* Each robo has its own trailing margin instead of using `gap`
+ * on the strip — that way every item (including the one at the
+ * seam between the two duplicate copies) has the same right-side
+ * spacing, so translateX(-50%) lands on an exact copy boundary
+ * and the loop is invisible. */
 .factory-robo {
   flex: 0 0 auto;
-  width: 42px;
-  height: 60px;
+  width: 38px;
+  height: 54px;
+  margin-right: 1.25rem;
 }
 
 /* ── Placeholder screen ──────────────────────────────────────────── */
@@ -826,8 +1072,13 @@
     animation: none;
   }
 
-  .factory-conveyor.running .factory-strip {
-    animation-duration: 14s;
+  .factory-strip {
+    animation-duration: calc(var(--roll-duration, 8s) * 2.5);
+  }
+
+  .factory-box-puff {
+    animation: none;
+    opacity: 0;
   }
 
   .dialogue-indicator.shown {
