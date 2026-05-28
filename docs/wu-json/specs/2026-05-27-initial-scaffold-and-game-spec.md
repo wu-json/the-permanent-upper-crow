@@ -64,13 +64,13 @@ Setting: a horizontal conveyor of Robo-Crow silhouettes moving across the frame.
 
 ### Screen 3 — *The Newscast*
 
-Setting: first-person view of a TV from the couch — the TV frame fills most of the viewport, the player crow is not visible (you ARE the player, slumped on the couch). Inside the TV, **Trisha Cawkanawa** (a play on Tricia Takanawa from Family Guy) anchors **Caw News Network** ("CNN") from a small news desk. A `LIVE` indicator pulses in the upper-corner of the TV; a chyron cycles headlines along the bottom of the TV screen.
+Setting: first-person view of a TV from the couch — the TV frame fills most of the viewport, the player crow is not visible (you ARE the player, slumped on the couch). Inside the TV, **Trisha Cawkanawa** (a play on Tricia Takanawa from Family Guy) anchors **Caw News Network** ("CNN") from a small news desk with a studio microphone in front of her. A `LIVE` indicator pulses in the upper-corner of the TV; a chyron cycles headlines along the bottom of the TV screen.
 
 HUD: post-launch `NEST WORTH: $ 100` (loop 1; the next loop's starting balance, from `deriveLoopValues(loop + 1).balance`).
 
-Trisha's report streams in the same Animal-Crossing dialogue box used on screens 1 and 2 (speaker label `TRISHA CAWKANAWA`). The current loop's company name (`${company}` — `Crow Automation Systems` on loop 1, then `Caw Labs`, `Crowford Ventures`, etc.) is attributed for both the good news (earnings, productivity) and the bad news (unemployment, inflation) — the broadcast IS the corporate PR feed:
+Trisha's report streams in the same Animal-Crossing dialogue box used on screens 1 and 2 (speaker label `TRISHA CAWKANAWA`). Caw News Network bills itself as an *independent* newsroom, which the rest of her broadcast quietly undermines — the current loop's company name (`${company}` — `Crow Automation Systems` on loop 1, then `Caw Labs`, `Crowford Ventures`, etc.) is attributed for both the good news (earnings, productivity) and the bad news (unemployment, inflation):
 
-- *"Good evening. I'm Trisha Cawkanawa, reporting live for Caw News Network — brought to you by ${company}."*
+- *"Good evening. I'm Trisha Cawkanawa, reporting live for Caw News Network — your independent voice."*
 - *"Tonight's top story: the under-crow job market has officially collapsed."*
 - *"${company} reports record Q3 earnings, beating every analyst expectation."*
 - *"Analysts credit ${company}'s Robo-Crow rollout for an unprecedented productivity surge."*
