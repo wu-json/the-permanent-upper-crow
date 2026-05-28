@@ -1076,6 +1076,243 @@
   }
 }
 
+/* ── News screen (Screen 3) ──────────────────────────────────────── */
+
+/* TV chassis: outer rounded box with a darker inset screen.
+ * Scene + dialogue are auto-centered as a group via .screen-news
+ * rules below so the TV sits in the upper half on tall viewports
+ * with the dialogue right beneath it. */
+.screen-news > .news-tv {
+  margin-top: auto;
+}
+
+.screen-news > .dialogue-box {
+  margin-bottom: auto;
+}
+
+.news-tv {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 4 / 3;
+  padding: 14px;
+  box-sizing: border-box;
+  border: 2px solid var(--color-ink-soft);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.news-tv-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050505;
+  border: 1px solid var(--color-ink-faint);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.news-live {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--color-ink);
+  z-index: 2;
+}
+
+.news-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-error);
+  box-shadow: 0 0 6px var(--color-error-glow);
+  animation: news-live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes news-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.news-scene {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.news-reporter {
+  position: absolute;
+  left: 50%;
+  bottom: 36px;
+  width: 70px;
+  height: 100px;
+  transform: translateX(-50%);
+  margin-bottom: -3px;
+  z-index: 1;
+}
+
+/* Studio microphone sitting on the desk off to the reporter's
+ * left (our right) so it reads as a separate prop instead of
+ * something inside her body. Base on the desk top; head at
+ * about chest height. Muted gray so it doesn't compete with the
+ * white reporter for attention. */
+.news-mic {
+  position: absolute;
+  bottom: 40px;
+  left: calc(50% + 44px);
+  width: 18px;
+  height: 54px;
+  color: var(--color-ink-muted);
+  z-index: 3;
+}
+
+.news-mic svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.news-desk {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 40px;
+  background: var(--color-ink-soft);
+  border-top: 2px solid var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.news-desk-label {
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+  letter-spacing: 0.32em;
+  color: var(--color-surface);
+}
+
+.news-chyron {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 26px;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  padding: 0 0.6rem;
+  overflow: hidden;
+  border-top: 1px solid var(--color-ink-soft);
+}
+
+.news-chyron-tag {
+  flex: 0 0 auto;
+  background: var(--color-error);
+  color: var(--color-ink);
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  padding: 2px 6px;
+}
+
+.news-chyron-text {
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+/* Cross-fade helper used to dismiss the TV + dialogue when the
+ * post-broadcast NEST WORTH reveal takes over. */
+.news-fading {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+/* Post-broadcast NEST WORTH reveal — full-screen overlay that
+ * fades in once Trisha finishes and counts up from the loop's
+ * starting balance to the post-launch balance. Lands with a
+ * small celebratory pulse before fading out into Screen 4. */
+.news-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  font-family: var(--font-pixel);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
+  transform: scale(0.98);
+}
+
+.news-reveal.shown {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.news-reveal-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.32em;
+  color: var(--color-ink-muted);
+}
+
+.news-reveal-value {
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  text-shadow:
+    0 0 16px var(--color-glow),
+    0 0 36px var(--color-glow-soft);
+  transition:
+    color 350ms ease,
+    text-shadow 350ms ease,
+    transform 350ms ease;
+}
+
+/* Landed = counter has finished. One brief flash to green + a
+ * spring-y scale pulse, then settle back. */
+.news-reveal.landed .news-reveal-value {
+  animation: news-reveal-land 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes news-reveal-land {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.2);
+    color: var(--color-success);
+    text-shadow:
+      0 0 18px var(--color-success-glow),
+      0 0 40px var(--color-success-glow);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* ── Placeholder screen ──────────────────────────────────────────── */
 
 .screen-placeholder {
@@ -1137,6 +1374,14 @@
   .factory-box-puff {
     animation: none;
     opacity: 0;
+  }
+
+  .news-live-dot {
+    animation: none;
+  }
+
+  .news-reveal.landed .news-reveal-value {
+    animation: none;
   }
 
   .dialogue-indicator.shown {

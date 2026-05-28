@@ -3,14 +3,20 @@ import { deriveLoopValues, loadLoop, type GameState } from './state';
 import type { GameContext, Screen } from './screens/types';
 import { storeScreen } from './screens/store';
 import { factoryScreen } from './screens/factory';
+import { newsScreen } from './screens/news';
 import { placeholderScreen } from './screens/placeholder';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('#app not found');
 
 // Screens are mounted in order. Placeholder stands in for Screen
-// 3 until PR 5 (the couch) replaces it.
-const screens: Screen[] = [storeScreen, factoryScreen, placeholderScreen];
+// 4 until PR 6 (the spaceship) replaces it.
+const screens: Screen[] = [
+  storeScreen,
+  factoryScreen,
+  newsScreen,
+  placeholderScreen,
+];
 
 // Dev jump: ?screen=<0..3 | store | factory | couch | ship> and/or
 // ?loop=<n> bypass the linear flow. Harmless in production — if
@@ -18,6 +24,7 @@ const screens: Screen[] = [storeScreen, factoryScreen, placeholderScreen];
 const SCREEN_NAMES: Record<string, number> = {
   store: 0,
   factory: 1,
+  news: 2,
   couch: 2,
   ship: 3,
 };

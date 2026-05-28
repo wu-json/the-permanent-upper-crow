@@ -1,0 +1,206 @@
+import { getRichCast } from '../cast';
+import { createCrow } from '../crow';
+import { createDialogue } from '../dialogue';
+import { deriveLoopValues } from '../state';
+import { formatMoney } from '../ui';
+import type { Screen } from './types';
+
+const REPORTER_NAME = 'Trisha Cawkanawa';
+const NETWORK_NAME = 'Caw News Network';
+
+// Trisha's report — Caw News Network bills itself as an
+// independent newsroom, which the rest of her broadcast quietly
+// undermines: every story attributes the good news AND the bad
+// news to the current loop's company. ${company} rotates per
+// loop alongside the rest of the rich-crow cast.
+function makeNewsDialogue(company: string): readonly string[] {
+  return [
+    `Good evening. I'm ${REPORTER_NAME}, reporting live for ${NETWORK_NAME} — your independent voice.`,
+    "Tonight's top story: the under-crow job market has officially collapsed.",
+    `${company} reports record Q3 earnings, beating every analyst expectation.`,
+    `Analysts credit ${company}'s Robo-Crow rollout for an unprecedented productivity surge.`,
+    `Food prices are up 312% year over year. ${company} has issued a statement assuring viewers that this is, quote, "fine".`,
+    'The under-crows are protesting outside our studio. We will not be covering it.',
+    'Back to you.',
+  ];
+}
+
+// Studio microphone sitting on the news desk — capsule head +
+// three horizontal mesh lines on the head + thin neck + small
+// base. ViewBox is exact to the content so the base actually
+// touches the desk top instead of floating.
+const MIC_SVG = `<svg viewBox="0 0 14 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M7 0C10.31 0 13 3.13 13 7L13 13C13 16.87 10.31 20 7 20C3.69 20 1 16.87 1 13L1 7C1 3.13 3.69 0 7 0ZM6 20L8 20L8 38L11 38L11 42L3 42L3 38L6 38Z"/><path fill="none" stroke="rgba(0,0,0,0.65)" stroke-width="0.9" stroke-linecap="round" d="M2.5 6L11.5 6M1.5 10L12.5 10M2.5 14L11.5 14"/></svg>`;
+
+const CHYRON_STRINGS: readonly string[] = [
+  'JOB MARKET COLLAPSES',
+  'UNDER-CROWS PROTEST',
+  'ROBO-CROW Q3 EARNINGS BEAT',
+  'FOOD PRICES UP 312% Y/Y',
+];
+const CHYRON_INTERVAL_MS = 1800;
+const DIALOGUE_START_DELAY_MS = 700;
+
+// Reveal sequence timings.
+const SCENE_FADE_MS = 500;
+const COUNTER_DURATION_MS = 1500;
+// Sit on the final value for a beat after the celebratory pulse
+// before fading out — gives the player time to read the number.
+const POST_COUNTER_HOLD_MS = 3500;
+const FINAL_FADE_MS = 500;
+
+function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+export const newsScreen: Screen = {
+  mount(host, ctx) {
+    // Pre-news balance is the loop's start; the reveal counts up
+    // to the post-launch balance (next loop's start) so the
+    // player sees their windfall land.
+    const prevBalance = deriveLoopValues(ctx.state.loop).balance;
+    const nextBalance = deriveLoopValues(ctx.state.loop + 1).balance;
+
+    const cast = getRichCast(ctx.state.loop);
+    const newsLines = makeNewsDialogue(cast.company);
+
+    const root = document.createElement('div');
+    root.classList.add('screen', 'screen-news');
+
+    // (No HUD on this screen — the NEST WORTH reveal IS the HUD,
+    // unlocked at the end of Trisha's broadcast.)
+
+    // TV chassis with screen, LIVE indicator, reporter + desk +
+    // mic, and chyron strip.
+    const tv = document.createElement('div');
+    tv.classList.add('news-tv');
+
+    const tvScreen = document.createElement('div');
+    tvScreen.classList.add('news-tv-screen');
+
+    const live = document.createElement('div');
+    live.classList.add('news-live');
+    live.innerHTML = `<span class="news-live-dot" aria-hidden="true"></span><span class="news-live-label">LIVE</span>`;
+
+    const scene = document.createElement('div');
+    scene.classList.add('news-scene');
+
+    const reporter = createCrow('player');
+    reporter.classList.add('news-reporter');
+    const mic = document.createElement('div');
+    mic.classList.add('news-mic');
+    mic.innerHTML = MIC_SVG;
+    const desk = document.createElement('div');
+    desk.classList.add('news-desk');
+    desk.innerHTML = `<span class="news-desk-label">CNN</span>`;
+    scene.append(reporter, mic, desk);
+
+    const chyron = document.createElement('div');
+    chyron.classList.add('news-chyron');
+    const chyronLabel = document.createElement('span');
+    chyronLabel.classList.add('news-chyron-tag');
+    chyronLabel.textContent = 'BREAKING';
+    const chyronText = document.createElement('span');
+    chyronText.classList.add('news-chyron-text');
+    chyronText.textContent = CHYRON_STRINGS[0];
+    chyron.append(chyronLabel, chyronText);
+
+    tvScreen.append(live, scene, chyron);
+    tv.appendChild(tvScreen);
+
+    // Dialogue box (Trisha's report).
+    const dialogue = createDialogue({ speaker: REPORTER_NAME.toUpperCase() });
+    dialogue.el.classList.add('shown');
+
+    // Balance reveal — full-screen, initially hidden. Shown after
+    // Trisha's last line: TV + dialogue fade out, this fades in
+    // and counts the balance up from prev → next.
+    const reveal = document.createElement('div');
+    reveal.classList.add('news-reveal');
+    reveal.setAttribute('aria-hidden', 'true');
+    const revealLabel = document.createElement('div');
+    revealLabel.classList.add('news-reveal-label');
+    revealLabel.textContent = 'NEST WORTH';
+    const revealValue = document.createElement('div');
+    revealValue.classList.add('news-reveal-value');
+    revealValue.textContent = formatMoney(prevBalance);
+    reveal.append(revealLabel, revealValue);
+
+    root.append(tv, dialogue.el, reveal);
+    host.appendChild(root);
+
+    // Chyron cycler.
+    let chyronIdx = 0;
+    const chyronTimer = window.setInterval(() => {
+      chyronIdx = (chyronIdx + 1) % CHYRON_STRINGS.length;
+      chyronText.textContent = CHYRON_STRINGS[chyronIdx];
+    }, CHYRON_INTERVAL_MS);
+
+    // Timer / animation handles for cleanup.
+    let startDelayTimer: number | null = null;
+    let fadeTimer: number | null = null;
+    let holdTimer: number | null = null;
+    let finalFadeTimer: number | null = null;
+    let counterRaf: number | null = null;
+
+    const runCounter = (onDone: () => void) => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min((now - start) / COUNTER_DURATION_MS, 1);
+        const eased = easeOutCubic(t);
+        const current = Math.round(
+          prevBalance + (nextBalance - prevBalance) * eased,
+        );
+        revealValue.textContent = formatMoney(current);
+        if (t < 1) {
+          counterRaf = window.requestAnimationFrame(tick);
+        } else {
+          counterRaf = null;
+          revealValue.textContent = formatMoney(nextBalance);
+          onDone();
+        }
+      };
+      counterRaf = window.requestAnimationFrame(tick);
+    };
+
+    dialogue.onAdvance(() => {
+      // Beat 1: fade out TV + dialogue.
+      tv.classList.add('news-fading');
+      dialogue.el.classList.add('news-fading');
+
+      fadeTimer = window.setTimeout(() => {
+        fadeTimer = null;
+        // Beat 2: reveal the centered NEST WORTH and count it up.
+        reveal.classList.add('shown');
+        runCounter(() => {
+          // Beat 3: brief celebratory pulse / glow.
+          reveal.classList.add('landed');
+          holdTimer = window.setTimeout(() => {
+            holdTimer = null;
+            // Beat 4: fade everything out, then advance.
+            reveal.classList.add('news-fading');
+            finalFadeTimer = window.setTimeout(() => {
+              finalFadeTimer = null;
+              ctx.advance();
+            }, FINAL_FADE_MS);
+          }, POST_COUNTER_HOLD_MS);
+        });
+      }, SCENE_FADE_MS);
+    });
+
+    startDelayTimer = window.setTimeout(() => {
+      startDelayTimer = null;
+      dialogue.play(newsLines);
+    }, DIALOGUE_START_DELAY_MS);
+
+    return () => {
+      window.clearInterval(chyronTimer);
+      if (startDelayTimer !== null) window.clearTimeout(startDelayTimer);
+      if (fadeTimer !== null) window.clearTimeout(fadeTimer);
+      if (holdTimer !== null) window.clearTimeout(holdTimer);
+      if (finalFadeTimer !== null) window.clearTimeout(finalFadeTimer);
+      if (counterRaf !== null) window.cancelAnimationFrame(counterRaf);
+      dialogue.cleanup();
+      root.remove();
+    };
+  },
+};
