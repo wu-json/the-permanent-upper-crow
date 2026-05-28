@@ -220,9 +220,6 @@ export const storeScreen: Screen = {
               <div class="contract-sig-label">${cast.name}, Founder &amp; CEO</div>
             </div>
           </div>
-          <p class="contract-fine-print">
-            §47B. Arbitration. By signing, the Employee waives all rights to legal recourse and agrees to a 7-loop binding arbitration cycle with no recorded arbitrator. The arbitrator is a crow. The arbitrator is unavailable. This section is unenforceable in any jurisdiction where it has been read.
-          </p>
         </div>
       </div>
     `;
@@ -239,7 +236,15 @@ export const storeScreen: Screen = {
     contractThought.classList.add('contract-thought');
     contractThought.setAttribute('aria-live', 'polite');
 
-    contractCard.append(contractActions, contractThought);
+    // §47B fine print — physically unreadable. Lives at the very
+    // bottom of the card (below the buttons) so it reads as a
+    // legal footer.
+    const finePrint = document.createElement('p');
+    finePrint.classList.add('contract-fine-print');
+    finePrint.textContent =
+      '§47B. Arbitration. By signing, the Employee waives all rights to legal recourse and agrees to a 7-loop binding arbitration cycle with no recorded arbitrator. The arbitrator is a crow. The arbitrator is unavailable. This section is unenforceable in any jurisdiction where it has been read.';
+
+    contractCard.append(contractActions, contractThought, finePrint);
 
     root.append(hudWrap, stage, dialogue.el, cta, contract);
     host.appendChild(root);
