@@ -51,9 +51,72 @@
 
 .crow {
   display: inline-block;
+  position: relative;
   width: 80px;
   height: 115px;
   color: var(--color-ink);
+}
+
+/* Pixel heart that pops above the rich crow on his flirty
+ * "see you in the office Sunday" beats. Lives as a child of the
+ * `.crow` element (which provides the positioning context),
+ * floats up and fades, self-removes on animationend. */
+.crow-heart {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: auto;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  animation: heart-pop 1.8s ease-out forwards;
+  z-index: 2;
+  /* Subtle red glow so the heart reads against the dark
+   * surface without competing with the crow's halo. */
+  filter: drop-shadow(0 0 4px rgba(255, 51, 68, 0.5));
+}
+
+.crow-heart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Don't inherit the mirroring transform applied to
+   * `.crow-mirrored svg` — the heart should never be flipped. */
+  transform: none;
+}
+
+@keyframes heart-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.4);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -42px) scale(0.95);
+  }
+}
+
+@keyframes heart-pop-still {
+  0%,
+  20%,
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crow-heart {
+    animation: heart-pop-still 1.4s ease-out forwards;
+  }
 }
 
 .crow svg {

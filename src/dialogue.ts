@@ -27,6 +27,13 @@ export interface DialogueHandle {
   setActive(active: boolean): void;
   /** Register the "tap past the last line" callback. */
   onAdvance(callback: () => void): void;
+  /**
+   * Register a callback that fires every time a line finishes
+   * streaming. Useful for screens that want to react to specific
+   * lines (e.g. the rich crow's flirty "see you in the office"
+   * cue triggers a wink + heart).
+   */
+  onLineComplete(callback: (lineIdx: number, line: string) => void): void;
   /** Clear timers and listeners. Caller removes the element. */
   cleanup(): void;
 }
@@ -88,6 +95,9 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
   // skip the next screen. Cleared whenever `play()` is called.
   let advanced = false;
   let advanceCb: (() => void) | null = null;
+  let lineCompleteCb:
+    | ((lineIdx: number, line: string) => void)
+    | null = null;
 
   const clearStream = () => {
     if (streamTimer !== null) {
@@ -96,10 +106,11 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     }
   };
 
-  const onLineComplete = () => {
+  const handleLineComplete = () => {
     streaming = false;
     streamTimer = null;
     indicator.classList.add('shown');
+    lineCompleteCb?.(lineIdx, lines[lineIdx]);
   };
 
   let blipCounter = 0;
@@ -113,7 +124,7 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     const line = lines[lineIdx];
     const tick = () => {
       if (charIdx >= line.length) {
-        onLineComplete();
+        handleLineComplete();
         return;
       }
       const ch = line[charIdx];
@@ -132,7 +143,7 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     clearStream();
     text.textContent = lines[lineIdx];
     charIdx = lines[lineIdx].length;
-    onLineComplete();
+    handleLineComplete();
   };
 
   const tryAdvance = () => {
@@ -202,6 +213,9 @@ export function createDialogue(opts: DialogueOptions): DialogueHandle {
     },
     onAdvance(cb) {
       advanceCb = cb;
+    },
+    onLineComplete(cb) {
+      lineCompleteCb = cb;
     },
     cleanup() {
       clearStream();

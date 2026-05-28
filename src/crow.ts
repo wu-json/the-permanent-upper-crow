@@ -17,6 +17,17 @@ const CROW_SVG = `<svg viewBox="0 0 100 144" xmlns="http://www.w3.org/2000/svg" 
 // no overlap, no gap.
 const CROW_RICH_SVG = `<svg viewBox="0 -16 100 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M26 2Q30 4 42 4L42 -14L58 -14L58 4Q70 4 74 2L74 10L70 12C72 16 72 22 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C28 22 28 16 30 12L26 10ZM38 28a8 8 0 1 0 16 0a8 8 0 1 0-16 0Z"/></svg>`;
 
+// Winking variant of the rich crow — identical to the body
+// above, but the eye sub-path is a thin horizontal slash rather
+// than a circle, so the eye reads as closed. Used as a brief
+// inner-HTML swap on the rich crow when he hits a flirty line.
+const CROW_RICH_WINKING_SVG = `<svg viewBox="0 -16 100 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M26 2Q30 4 42 4L42 -14L58 -14L58 4Q70 4 74 2L74 10L70 12C72 16 72 22 70 26L100 34L70 42C78 52 86 82 86 112L86 124L80 130L76 124L70 130L66 124L62 130L62 140L58 140L58 130L56 124L50 130L46 124L42 130L42 140L38 140L38 130L36 124L30 130L26 124L20 130L14 124L14 112C14 82 22 52 30 42C28 22 28 16 30 12L26 10ZM38 27L54 27L54 29L38 29Z"/></svg>`;
+
+// Chunky 7×6 pixel heart drawn as six axis-aligned subpaths.
+// Red so it reads as a love beat against the otherwise grayscale
+// palette (and matches `--color-error` elsewhere in the UI).
+const HEART_SVG = `<svg viewBox="0 0 7 6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#ff3344" d="M1 0L3 0L3 1L1 1ZM4 0L6 0L6 1L4 1ZM0 1L7 1L7 3L0 3ZM1 3L6 3L6 4L1 4ZM2 4L5 4L5 5L2 5ZM3 5L4 5L4 6L3 6Z"/></svg>`;
+
 // Robo-Crow: the factory output the player ships. Same body
 // silhouette + two small antennas integrated into the path top,
 // SQUARE eye (= screen/visor), and two metal "straps" wrapping
@@ -42,4 +53,31 @@ export function createCrow(variant: CrowVariant): HTMLElement {
   if (variant === 'rich') el.classList.add('crow-glow-rich');
   el.innerHTML = CROW_SVG_BY_VARIANT[variant];
   return el;
+}
+
+// Swap the rich crow's SVG for the winking variant for ~durationMs,
+// then restore. Returns a cleanup that restores immediately —
+// callers should invoke it on screen unmount so we never leave
+// the crow mid-wink across a screen swap.
+export function winkRich(crowEl: HTMLElement, durationMs = 750): () => void {
+  crowEl.innerHTML = CROW_RICH_WINKING_SVG;
+  const timer = window.setTimeout(() => {
+    crowEl.innerHTML = CROW_RICH_SVG;
+  }, durationMs);
+  return () => {
+    window.clearTimeout(timer);
+    crowEl.innerHTML = CROW_RICH_SVG;
+  };
+}
+
+// Spawn a pink/red pixel heart inside `parent` that floats up and
+// fades over ~1.8 s. Parent must be `position: relative` (the
+// shared `.crow` rule handles that). Self-removes on animationend.
+export function popHeart(parent: HTMLElement): void {
+  const heart = document.createElement('span');
+  heart.classList.add('crow-heart');
+  heart.setAttribute('aria-hidden', 'true');
+  heart.innerHTML = HEART_SVG;
+  parent.appendChild(heart);
+  heart.addEventListener('animationend', () => heart.remove(), { once: true });
 }
