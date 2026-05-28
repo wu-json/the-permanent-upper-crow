@@ -220,6 +220,9 @@ export const storeScreen: Screen = {
               <div class="contract-sig-label">${cast.name}, Founder &amp; CEO</div>
             </div>
           </div>
+          <p class="contract-fine-print">
+            §47B. Arbitration. By signing, the Employee waives all rights to legal recourse and agrees to a 7-loop binding arbitration cycle with no recorded arbitrator. The arbitrator is a crow. The arbitrator is unavailable. This section is unenforceable in any jurisdiction where it has been read.
+          </p>
         </div>
       </div>
     `;
