@@ -106,6 +106,25 @@ export function createWebsiteLink(href: string): HTMLAnchorElement {
   return link;
 }
 
+// HN-style upvote triangle — the same caret-up shape used as the
+// upvote affordance on news.ycombinator.com. Drawn into a 24×24
+// viewBox so it lines up with the other corner-chip icons.
+const ICON_UPVOTE = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor"><path d="M12 5L3 18h18z"/></svg>`;
+
+export function createHackerNewsLink(href: string): HTMLAnchorElement {
+  const link = document.createElement('a');
+  link.classList.add('btn-corner', 'btn-hn');
+  link.href = href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.setAttribute(
+    'aria-label',
+    'upvote this game on Hacker News in a new tab',
+  );
+  link.innerHTML = `${ICON_UPVOTE}<span class="btn-hn-label">upvote on HN</span>`;
+  return link;
+}
+
 // Lucide-style coffee cup — for the "buy me a cawfee" tip chip.
 // 24×24 viewBox to match the other corner icons; stroke uses
 // currentColor so it inherits the chip's text color.

@@ -300,10 +300,18 @@
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 0.6rem);
   right: calc(env(safe-area-inset-right, 0px) + 0.6rem);
+  left: calc(env(safe-area-inset-left, 0px) + 0.6rem);
   z-index: 60;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 0.4rem;
+  pointer-events: none;
+}
+
+.corner-stack > * {
+  pointer-events: auto;
 }
 
 .btn-corner {
@@ -348,18 +356,20 @@
   border-color: var(--color-ink-trace);
 }
 
-/* Fake "buy me a cawfee" tip jar. Icon + label sit side by side
- * so the joke is obvious — pure icon would just read as another
- * generic chip. Vertical padding is trimmed by ~1px vs the
- * icon-only chips so the labeled chip lands at the same height
- * as its siblings in the stack. */
-.btn-cawfee {
+/* Labeled corner chips — "buy me a cawfee" and "upvote on HN".
+ * Inherit the icon-only chips' vertical padding and line-height: 0
+ * so the chip box sizes to the 14px SVG, not to the button's own
+ * inherited font line box; otherwise the labeled chips render
+ * noticeably taller than their icon-only siblings. Only horizontal
+ * padding + gap differ, to make room for the label. */
+.btn-cawfee,
+.btn-hn {
   gap: 0.35rem;
-  padding: 0.22rem 0.55rem;
-  line-height: 1;
+  padding: 0.3rem 0.55rem;
 }
 
-.btn-cawfee-label {
+.btn-cawfee-label,
+.btn-hn-label {
   font-family: var(--font-pixel);
   font-size: 0.6rem;
   letter-spacing: 0.12em;
@@ -428,14 +438,15 @@
   margin: 0 auto;
 }
 
-/* On narrow viewports the corner reset / mute chips sit at the
- * same vertical position as the HUD, which makes the label run
- * straight between them. Push the HUD below the chip row on
- * mobile and honour the safe-area inset so it stays clear on
- * notched phones too. */
-@media (max-width: 500px) {
+/* On narrow viewports the corner chip stack wraps to a second
+ * row, which would otherwise run straight through the HUD label.
+ * Reserve enough vertical room for two rows of chips and honour
+ * the safe-area inset so it stays clear on notched phones too.
+ * The breakpoint is wider than the chip-stack wrap point so we
+ * push the HUD down before the overlap can happen. */
+@media (max-width: 720px) {
   .hud-wrap {
-    margin-top: calc(env(safe-area-inset-top, 0px) + 1.5rem);
+    margin-top: calc(env(safe-area-inset-top, 0px) + 3.25rem);
   }
 }
 
