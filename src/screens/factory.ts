@@ -10,7 +10,9 @@ const FACTORY_DIALOGUE: readonly string[] = [
   'We are so back.',
   'I can smell our investors gawking at these Q2 profits.',
   'Our next quarter will crush those damn Eagles.',
-  "Great work. I'm looking forward to enjoying my— I mean our fortune very soon in our initial public offering.",
+  'Great work! I knew you had the grit in you.',
+  "I'm looking forward to enjoying my— I mean our fortune very soon in our initial public offering.",
+  'See you in the office Sunday morning dear.',
 ];
 
 // Comically vague disclaimers shown when the player taps the
@@ -30,6 +32,14 @@ const MIN_CONVEYOR_SLOTS = 8;
 // derived from copy-width so wider screens don't make the belt
 // look like it's on fast-forward.
 const CONVEYOR_PX_PER_SEC = 55;
+
+// Random delay range (ms) between PLEASE HELP appearances. First
+// appearance uses the shorter `FIRST_*` range so the easter egg
+// shows up relatively soon after mount.
+const HELP_FIRST_DELAY_MIN = 5_000;
+const HELP_FIRST_DELAY_MAX = 15_000;
+const HELP_DELAY_MIN = 22_000;
+const HELP_DELAY_MAX = 55_000;
 
 // Brief delay before the rich crow starts talking so the player
 // can read the scene first.
@@ -168,8 +178,49 @@ export const factoryScreen: Screen = {
       dialogue.play(FACTORY_DIALOGUE);
     }, DIALOGUE_START_DELAY_MS);
 
+    // Easter egg: rare normal (non-robo) crow rides the conveyor
+    // with a PLEASE HELP speech bubble. Spawned at randomized
+    // intervals; self-removes when its travel animation ends.
+    let helpTimer: number | null = null;
+
+    const spawnPleaseHelp = () => {
+      const wrap = document.createElement('div');
+      wrap.classList.add('please-help');
+      wrap.setAttribute('aria-hidden', 'true');
+
+      const bubble = document.createElement('span');
+      bubble.classList.add('please-help-bubble');
+      bubble.textContent = 'PLEASE HELP';
+
+      const crow = createCrow('player');
+      crow.classList.add('please-help-crow');
+
+      wrap.append(bubble, crow);
+      conveyor.appendChild(wrap);
+
+      const travelPx = conveyor.clientWidth + 200;
+      wrap.style.setProperty('--travel', `${travelPx}px`);
+      wrap.style.animationDuration = `${travelPx / CONVEYOR_PX_PER_SEC}s`;
+      wrap.addEventListener('animationend', () => wrap.remove(), {
+        once: true,
+      });
+    };
+
+    const scheduleHelp = (firstShot = false) => {
+      const min = firstShot ? HELP_FIRST_DELAY_MIN : HELP_DELAY_MIN;
+      const max = firstShot ? HELP_FIRST_DELAY_MAX : HELP_DELAY_MAX;
+      const delay = min + Math.random() * (max - min);
+      helpTimer = window.setTimeout(() => {
+        helpTimer = null;
+        spawnPleaseHelp();
+        scheduleHelp();
+      }, delay);
+    };
+    scheduleHelp(true);
+
     return () => {
       window.clearTimeout(startDelayTimer);
+      if (helpTimer !== null) window.clearTimeout(helpTimer);
       cautionBtn.removeEventListener('click', openWarning);
       dialogue.cleanup();
       root.remove();
