@@ -1,3 +1,4 @@
+import { startSpaceship } from '../audio';
 import { createDialogue } from '../dialogue';
 import type { Screen } from './types';
 
@@ -113,7 +114,11 @@ export const shipScreen: Screen = {
       dialogue.play(CAPTAIN_LINES);
     }, DIALOGUE_START_DELAY_MS);
 
+    // Spaceship interior ambience under the captain's address.
+    const stopShip = startSpaceship();
+
     return () => {
+      stopShip();
       window.clearTimeout(startTimer);
       dialogue.cleanup();
       root.remove();

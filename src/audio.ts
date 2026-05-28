@@ -164,6 +164,259 @@ export function playDenied(): void {
   osc.stop(now + 0.2);
 }
 
+// Angry under-crow crowd ambience for the news screen. Brown
+// noise → bandpass at ~500 Hz (Q=2) with a slow LFO modulating
+// the centre frequency so the wash feels like many voices
+// rolling, not a static hiss. Wired into `ambientHandles` so
+// the mute toggle ramps it alongside everything else.
+export function startCrowd(): () => void {
+  const c = ensureContext();
+  if (!c) return () => {};
+
+  const targetGain = 0.1;
+
+  // Longer buffer than the conveyor (3 s) so the wash doesn't
+  // sound obviously looped over the news broadcast.
+  const bufferSeconds = 3;
+  const buffer = c.createBuffer(
+    1,
+    Math.floor(c.sampleRate * bufferSeconds),
+    c.sampleRate,
+  );
+  const data = buffer.getChannelData(0);
+  let prev = 0;
+  for (let i = 0; i < data.length; i += 1) {
+    const white = Math.random() * 2 - 1;
+    prev = (prev + 0.02 * white) / 1.02;
+    data[i] = prev * 3.5;
+  }
+
+  const noise = c.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+
+  const bandpass = c.createBiquadFilter();
+  bandpass.type = 'bandpass';
+  bandpass.frequency.value = 500;
+  bandpass.Q.value = 2;
+
+  // LFO modulating the bandpass centre between ~350 and ~650 Hz.
+  // The drift evokes the loose chant/swell of a real crowd rather
+  // than a sustained drone.
+  const lfo = c.createOscillator();
+  const lfoGain = c.createGain();
+  lfo.type = 'sine';
+  lfo.frequency.value = 0.45;
+  lfoGain.gain.value = 150;
+  lfo.connect(lfoGain).connect(bandpass.frequency);
+
+  const gain = c.createGain();
+  gain.gain.value = 0;
+  noise.connect(bandpass).connect(gain).connect(c.destination);
+
+  noise.start();
+  lfo.start();
+  gain.gain.linearRampToValueAtTime(
+    muted ? 0 : targetGain,
+    c.currentTime + 0.9,
+  );
+
+  let stopped = false;
+  const handle: AmbientHandle = {
+    setMuted(m) {
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(
+        m ? 0 : targetGain,
+        c.currentTime + 0.2,
+      );
+    },
+    stop() {
+      if (stopped) return;
+      stopped = true;
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(0, c.currentTime + 0.5);
+      window.setTimeout(() => {
+        try {
+          noise.stop();
+          lfo.stop();
+        } catch {
+          /* already stopped */
+        }
+        noise.disconnect();
+        bandpass.disconnect();
+        gain.disconnect();
+        lfo.disconnect();
+        lfoGain.disconnect();
+      }, 550);
+    },
+  };
+  ambientHandles.add(handle);
+
+  return () => {
+    ambientHandles.delete(handle);
+    handle.stop();
+  };
+}
+
+// Ascending series of short blips that fires alongside the
+// post-broadcast NEST WORTH counter. The earlier sustained
+// sweep version read as obnoxious; discrete ticks feel more
+// like a counter clicking up. Pitch climbs from ~220 to ~440 Hz
+// across N evenly-spaced notes. Returns a stop function so the
+// screen can bail the remaining scheduled notes if it unmounts
+// early.
+export function playCounterSweep(durationMs: number): () => void {
+  if (muted) return () => {};
+  const c = ensureContext();
+  if (!c) return () => {};
+
+  const now = c.currentTime;
+  const dur = durationMs / 1000;
+  const NOTE_COUNT = 8;
+  const step = dur / NOTE_COUNT;
+  const startHz = 220;
+  const endHz = 440;
+  const oscs: OscillatorNode[] = [];
+
+  for (let i = 0; i < NOTE_COUNT; i += 1) {
+    const t = now + i * step;
+    const progress = NOTE_COUNT > 1 ? i / (NOTE_COUNT - 1) : 0;
+    const freq = startHz + (endHz - startHz) * progress;
+
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'square';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.05, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.07);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t);
+    osc.stop(t + 0.08);
+    oscs.push(osc);
+  }
+
+  let stopped = false;
+  return () => {
+    if (stopped) return;
+    stopped = true;
+    oscs.forEach((o) => {
+      try {
+        o.stop(c.currentTime);
+      } catch {
+        /* already stopped */
+      }
+    });
+  };
+}
+
+// Spaceship interior ambience. Two layered sources — a very
+// low brown-noise rumble for hull/engine vibration, plus a deep
+// sub-bass sine drone for the engine thrum. A slow tremolo on
+// the main gain ("breathing engine") keeps the bed from feeling
+// static across the captain's whole speech. Wired into
+// `ambientHandles` so the mute toggle ramps it.
+export function startSpaceship(): () => void {
+  const c = ensureContext();
+  if (!c) return () => {};
+
+  const targetGain = 0.09;
+
+  // Brown-noise rumble (hull / engine vibration).
+  const bufferSeconds = 3;
+  const buffer = c.createBuffer(
+    1,
+    Math.floor(c.sampleRate * bufferSeconds),
+    c.sampleRate,
+  );
+  const data = buffer.getChannelData(0);
+  let prev = 0;
+  for (let i = 0; i < data.length; i += 1) {
+    const white = Math.random() * 2 - 1;
+    prev = (prev + 0.02 * white) / 1.02;
+    data[i] = prev * 3.5;
+  }
+  const noise = c.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+
+  const lowpass = c.createBiquadFilter();
+  lowpass.type = 'lowpass';
+  lowpass.frequency.value = 180;
+  lowpass.Q.value = 0.7;
+
+  // Sub-bass sine drone (the engine itself).
+  const sub = c.createOscillator();
+  sub.type = 'sine';
+  sub.frequency.value = 55;
+  const subGain = c.createGain();
+  subGain.gain.value = 0.08;
+  sub.connect(subGain);
+
+  // Slow LFO on the master gain so the bed gently swells —
+  // sells "pressurised cabin breathing" without modulating
+  // anything pitched.
+  const lfo = c.createOscillator();
+  const lfoGain = c.createGain();
+  lfo.type = 'sine';
+  lfo.frequency.value = 0.25;
+  lfoGain.gain.value = 0.02;
+  lfo.connect(lfoGain);
+
+  const gain = c.createGain();
+  gain.gain.value = 0;
+  noise.connect(lowpass).connect(gain).connect(c.destination);
+  subGain.connect(gain);
+  lfoGain.connect(gain.gain);
+
+  noise.start();
+  sub.start();
+  lfo.start();
+  gain.gain.linearRampToValueAtTime(
+    muted ? 0 : targetGain,
+    c.currentTime + 1.0,
+  );
+
+  let stopped = false;
+  const handle: AmbientHandle = {
+    setMuted(m) {
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(
+        m ? 0 : targetGain,
+        c.currentTime + 0.2,
+      );
+    },
+    stop() {
+      if (stopped) return;
+      stopped = true;
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(0, c.currentTime + 0.5);
+      window.setTimeout(() => {
+        try {
+          noise.stop();
+          sub.stop();
+          lfo.stop();
+        } catch {
+          /* already stopped */
+        }
+        noise.disconnect();
+        lowpass.disconnect();
+        gain.disconnect();
+        sub.disconnect();
+        subGain.disconnect();
+        lfo.disconnect();
+        lfoGain.disconnect();
+      }, 550);
+    },
+  };
+  ambientHandles.add(handle);
+
+  return () => {
+    ambientHandles.delete(handle);
+    handle.stop();
+  };
+}
+
 // Faint conveyor-belt ambience for the factory screen. Brown
 // noise → low-pass at ~220 Hz → quiet gain. The lowpass kills
 // the hiss so what's left reads as machinery rumble. Returns a

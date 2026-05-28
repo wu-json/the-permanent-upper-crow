@@ -1596,29 +1596,31 @@
   border-right-width: 1px;
 }
 
-/* Cabin tremble — sub-pixel offsets at irrational steps. Should
- * feel like sustained engine vibration, not an earthquake. */
+/* Cabin tremble — small whole-pixel offsets at irrational steps.
+ * Should feel like sustained engine vibration, not an earthquake.
+ * Earlier sub-pixel amplitudes barely rendered on hi-DPI displays;
+ * these are ~3× larger so the rattle is actually visible. */
 @keyframes ship-vibrate {
   0% {
     transform: translate(0, 0);
   }
   14% {
-    transform: translate(-0.4px, 0.3px);
+    transform: translate(-1.2px, 0.8px);
   }
   28% {
-    transform: translate(0.5px, -0.2px);
+    transform: translate(1.4px, -0.6px);
   }
   42% {
-    transform: translate(-0.3px, 0.5px);
+    transform: translate(-0.9px, 1.3px);
   }
   56% {
-    transform: translate(0.4px, 0.1px);
+    transform: translate(1.1px, 0.4px);
   }
   70% {
-    transform: translate(-0.2px, -0.4px);
+    transform: translate(-0.7px, -1.1px);
   }
   84% {
-    transform: translate(0.3px, 0.3px);
+    transform: translate(0.9px, 0.9px);
   }
   100% {
     transform: translate(0, 0);
