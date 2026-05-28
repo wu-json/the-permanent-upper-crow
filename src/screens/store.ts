@@ -67,7 +67,7 @@ const DECLINE_THOUGHTS: readonly string[] = [
 // has tapped the hat enough times to count as bargaining. Indexed
 // by (clickCount - HAT_CLICK_SUBTEXT_AT) modulo the list length —
 // loops indefinitely so the snark never runs out.
-const HAT_CLICK_SUBTEXT_AT = 6;
+const HAT_CLICK_SUBTEXT_AT = 3;
 const HAT_CLICK_SUBTEXT: readonly string[] = [
   "you've already maxed out your crow card.",
   'tapping it harder will not lower the price.',

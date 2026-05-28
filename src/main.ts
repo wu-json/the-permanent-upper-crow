@@ -126,12 +126,13 @@ function mount(idx: number): void {
   cleanup = next.mount(app!, ctx);
 }
 
-// Persistent corner controls. Live on document.body so screen
-// swaps don't tear them down; CSS pins them to the viewport's
-// top-left (reset) and top-right (mute) with safe-area-inset
-// padding so they sit below the notch on mobile.
-// The reset chip starts hidden — mount() shows it only when the
-// player is on the store screen at loop ≥ 2.
+// Persistent corner controls. Stacked together in a single
+// fixed wrapper at the viewport's top-right so they share one
+// safe-area-inset baseline. Reset sits to the left of mute,
+// hidden by default; mount() shows it only when the player is
+// on the store screen at loop ≥ 2.
+const cornerStack = document.createElement('div');
+cornerStack.classList.add('corner-stack');
 const resetBtn = createResetButton(() => {
   state.loop = 1;
   saveLoop(1);
@@ -142,7 +143,8 @@ const resetBtn = createResetButton(() => {
   mount(0);
 });
 resetBtn.style.display = 'none';
-document.body.appendChild(resetBtn);
-document.body.appendChild(createMuteButton());
+cornerStack.appendChild(resetBtn);
+cornerStack.appendChild(createMuteButton());
+document.body.appendChild(cornerStack);
 
 mount(dev.startIdx);
