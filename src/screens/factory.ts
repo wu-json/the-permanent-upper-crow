@@ -1,3 +1,4 @@
+import { startConveyor } from '../audio';
 import { getRichCast } from '../cast';
 import { createCrow } from '../crow';
 import { createDialogue } from '../dialogue';
@@ -222,7 +223,12 @@ export const factoryScreen: Screen = {
     };
     scheduleHelp(true);
 
+    // Faint conveyor-belt ambience under the whole screen. Stops
+    // (with a short fade) when the player advances away.
+    const stopConveyor = startConveyor();
+
     return () => {
+      stopConveyor();
       window.clearTimeout(startDelayTimer);
       if (helpTimer !== null) window.clearTimeout(helpTimer);
       cautionBtn.removeEventListener('click', openWarning);

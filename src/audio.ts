@@ -21,6 +21,14 @@ let ctx: AudioContext | null = null;
 let muted = loadMuted();
 const listeners = new Set<(muted: boolean) => void>();
 
+// Long-running ambient loops (conveyor, etc.) register here so
+// `setMuted()` can ramp their gains alongside the one-shots.
+interface AmbientHandle {
+  setMuted(m: boolean): void;
+  stop(): void;
+}
+const ambientHandles = new Set<AmbientHandle>();
+
 function loadMuted(): boolean {
   try {
     return localStorage.getItem(STORAGE_KEY) === '1';
@@ -67,6 +75,7 @@ export function setMuted(value: boolean): void {
   if (muted === value) return;
   muted = value;
   saveMuted(value);
+  ambientHandles.forEach((h) => h.setMuted(value));
   listeners.forEach((cb) => cb(muted));
 }
 
@@ -98,9 +107,8 @@ export function playBlip(): void {
   const gain = c.createGain();
   osc.type = 'square';
   osc.frequency.value = 180 + Math.random() * 40;
-  // Square waves are loud per dB — keep the peak gain low.
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.04, now + 0.003);
+  gain.gain.linearRampToValueAtTime(0.1, now + 0.003);
   gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.04);
   osc.connect(gain).connect(c.destination);
   osc.start(now);
@@ -126,7 +134,7 @@ export function playCelebrate(): void {
     osc.type = 'square';
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.055, t + 0.008);
+    gain.gain.linearRampToValueAtTime(0.13, t + 0.008);
     gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.16);
     osc.connect(gain).connect(c.destination);
     osc.start(t);
@@ -149,11 +157,93 @@ export function playDenied(): void {
   osc.frequency.setValueAtTime(110, now);
   osc.frequency.linearRampToValueAtTime(80, now + 0.12);
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.07, now + 0.008);
+  gain.gain.linearRampToValueAtTime(0.16, now + 0.008);
   gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.18);
   osc.connect(gain).connect(c.destination);
   osc.start(now);
   osc.stop(now + 0.2);
+}
+
+// Faint conveyor-belt ambience for the factory screen. Brown
+// noise → low-pass at ~220 Hz → quiet gain. The lowpass kills
+// the hiss so what's left reads as machinery rumble. Returns a
+// `stop` function — the caller (factoryScreen) owns the lifetime
+// and is responsible for invoking it in its cleanup.
+export function startConveyor(): () => void {
+  const c = ensureContext();
+  if (!c) return () => {};
+
+  const targetGain = 0.07;
+
+  // 2-second looping brown-noise buffer. Brown (red) noise has a
+  // -6 dB/octave roll-off vs. white, so even before the lowpass
+  // it sits in the rumble register.
+  const bufferSeconds = 2;
+  const buffer = c.createBuffer(
+    1,
+    Math.floor(c.sampleRate * bufferSeconds),
+    c.sampleRate,
+  );
+  const data = buffer.getChannelData(0);
+  let prev = 0;
+  for (let i = 0; i < data.length; i += 1) {
+    const white = Math.random() * 2 - 1;
+    prev = (prev + 0.02 * white) / 1.02;
+    data[i] = prev * 3.5;
+  }
+
+  const noise = c.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+
+  const filter = c.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 220;
+  filter.Q.value = 0.6;
+
+  const gain = c.createGain();
+  gain.gain.value = 0;
+
+  noise.connect(filter).connect(gain).connect(c.destination);
+  noise.start();
+  // Fade in so the loop doesn't pop when the player arrives.
+  gain.gain.linearRampToValueAtTime(
+    muted ? 0 : targetGain,
+    c.currentTime + 0.6,
+  );
+
+  let stopped = false;
+  const handle: AmbientHandle = {
+    setMuted(m) {
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(
+        m ? 0 : targetGain,
+        c.currentTime + 0.2,
+      );
+    },
+    stop() {
+      if (stopped) return;
+      stopped = true;
+      gain.gain.cancelScheduledValues(c.currentTime);
+      gain.gain.linearRampToValueAtTime(0, c.currentTime + 0.3);
+      window.setTimeout(() => {
+        try {
+          noise.stop();
+        } catch {
+          /* already stopped */
+        }
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }, 350);
+    },
+  };
+  ambientHandles.add(handle);
+
+  return () => {
+    ambientHandles.delete(handle);
+    handle.stop();
+  };
 }
 
 // Low "boop" on advance — a single square-wave note with a small
@@ -170,7 +260,7 @@ export function playAdvance(): void {
   osc.frequency.setValueAtTime(170, now);
   osc.frequency.linearRampToValueAtTime(130, now + 0.08);
   gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.06, now + 0.006);
+  gain.gain.linearRampToValueAtTime(0.14, now + 0.006);
   gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.1);
   osc.connect(gain).connect(c.destination);
   osc.start(now);
