@@ -1,6 +1,6 @@
 import { startConveyor } from '../audio';
 import { getRichCast } from '../cast';
-import { createCrow } from '../crow';
+import { createCrow, popHeart, winkRich } from '../crow';
 import { createDialogue } from '../dialogue';
 import { deriveLoopValues } from '../state';
 import { createHud, createPrimaryButton } from '../ui';
@@ -179,6 +179,17 @@ export const factoryScreen: Screen = {
       ctx.advance();
     });
 
+    // Same flirty-Sunday cue as the store: rich crow winks and a
+    // red pixel heart pops on the matching line.
+    let cancelWink: (() => void) | null = null;
+    dialogue.onLineComplete((_idx, line) => {
+      if (line.toLowerCase().includes('see you in the office')) {
+        cancelWink?.();
+        cancelWink = winkRich(richCrow);
+        popHeart(richCrow);
+      }
+    });
+
     const startDelayTimer = window.setTimeout(() => {
       dialogue.play(FACTORY_DIALOGUE);
     }, DIALOGUE_START_DELAY_MS);
@@ -229,6 +240,7 @@ export const factoryScreen: Screen = {
 
     return () => {
       stopConveyor();
+      cancelWink?.();
       window.clearTimeout(startDelayTimer);
       if (helpTimer !== null) window.clearTimeout(helpTimer);
       cautionBtn.removeEventListener('click', openWarning);

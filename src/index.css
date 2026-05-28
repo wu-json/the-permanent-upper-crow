@@ -51,9 +51,72 @@
 
 .crow {
   display: inline-block;
+  position: relative;
   width: 80px;
   height: 115px;
   color: var(--color-ink);
+}
+
+/* Pixel heart that pops above the rich crow on his flirty
+ * "see you in the office Sunday" beats. Lives as a child of the
+ * `.crow` element (which provides the positioning context),
+ * floats up and fades, self-removes on animationend. */
+.crow-heart {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: auto;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  animation: heart-pop 1.8s ease-out forwards;
+  z-index: 2;
+  /* Subtle red glow so the heart reads against the dark
+   * surface without competing with the crow's halo. */
+  filter: drop-shadow(0 0 4px rgba(255, 51, 68, 0.5));
+}
+
+.crow-heart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Don't inherit the mirroring transform applied to
+   * `.crow-mirrored svg` — the heart should never be flipped. */
+  transform: none;
+}
+
+@keyframes heart-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.4);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -42px) scale(0.95);
+  }
+}
+
+@keyframes heart-pop-still {
+  0%,
+  20%,
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crow-heart {
+    animation: heart-pop-still 1.4s ease-out forwards;
+  }
 }
 
 .crow svg {
@@ -96,6 +159,48 @@
 
 .crow-rich {
   height: 128px;
+}
+
+/* Player crow blink. The eye is two stacked SVG shapes — an
+ * open circle and a closed slash, both painted in the surface
+ * colour to read as holes through the body. The slash is hidden
+ * by default; both animations run on a long cycle so the blink
+ * is a brief pulse every few seconds. Rich and background crows
+ * use the older single-path eye and aren't selected here. */
+.crow-eye-closed {
+  opacity: 0;
+}
+
+.crow-player .crow-eye-open {
+  animation: crow-blink-open 5.5s linear infinite;
+}
+
+.crow-player .crow-eye-closed {
+  animation: crow-blink-closed 5.5s linear infinite;
+}
+
+@keyframes crow-blink-open {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94%,
+  97% {
+    opacity: 0;
+  }
+}
+
+@keyframes crow-blink-closed {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  94%,
+  97% {
+    opacity: 1;
+  }
 }
 
 /* Mirror modifier — flip the SVG inside .crow horizontally so
@@ -186,22 +291,33 @@
   color: var(--color-ink-soft);
 }
 
-/* Persistent corner chips — reset on the top-left, mute on the
- * top-right — both pinned to the viewport with safe-area-inset
+/* Persistent corner chips — both pinned together in a single
+ * fixed wrapper at the viewport's top-right with safe-area-inset
  * padding so on notched phones they sit below the status bar
  * instead of under it. z-index 60 puts them above the loop-veil
  * (z-index 50) so the player can always reach them. */
-.btn-corner {
+.corner-stack {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 0.6rem);
+  right: calc(env(safe-area-inset-right, 0px) + 0.6rem);
   z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-corner {
   appearance: none;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid var(--color-ink-faint);
+  padding: 0.3rem 0.45rem;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-pixel);
   color: var(--color-ink-soft);
   cursor: pointer;
-  white-space: nowrap;
   transition:
     color 200ms ease,
     border-color 200ms ease,
@@ -219,26 +335,12 @@
   transform: translateY(1px);
 }
 
-.btn-reset {
-  left: calc(env(safe-area-inset-left, 0px) + 0.6rem);
-  padding: 0.3rem 0.55rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-}
-
-.btn-mute {
-  right: calc(env(safe-area-inset-right, 0px) + 0.6rem);
-  padding: 0.3rem 0.45rem;
-  line-height: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-mute svg {
+/* Both icons share a 24×24 viewBox, so locking them to the same
+ * pixel height makes the buttons render at identical sizes. */
+.btn-corner svg {
   display: block;
-  width: 20px;
-  height: auto;
+  height: 14px;
+  width: auto;
 }
 
 .btn-mute.is-muted {
@@ -267,6 +369,17 @@
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+}
+
+/* On narrow viewports the corner reset / mute chips sit at the
+ * same vertical position as the HUD, which makes the label run
+ * straight between them. Push the HUD below the chip row on
+ * mobile and honour the safe-area inset so it stays clear on
+ * notched phones too. */
+@media (max-width: 500px) {
+  .hud-wrap {
+    margin-top: calc(env(safe-area-inset-top, 0px) + 1.5rem);
+  }
 }
 
 /* ── Store screen ────────────────────────────────────────────────── */
@@ -334,9 +447,9 @@
   transform: translateY(1px);
 }
 
+.store-display:focus,
 .store-display:focus-visible {
-  outline: 1px solid var(--color-ink-faint);
-  outline-offset: 4px;
+  outline: 0;
 }
 
 .store-hat {
@@ -1755,6 +1868,11 @@
 @media (prefers-reduced-motion: reduce) {
   .crow-glow-player,
   .crow-glow-rich {
+    animation: none;
+  }
+
+  .crow-player .crow-eye-open,
+  .crow-player .crow-eye-closed {
     animation: none;
   }
 

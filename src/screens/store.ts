@@ -1,6 +1,6 @@
 import { playCelebrate, playDenied } from '../audio';
 import { getRichCast } from '../cast';
-import { createCrow } from '../crow';
+import { createCrow, popHeart, winkRich } from '../crow';
 import { createDialogue } from '../dialogue';
 import { deriveLoopValues } from '../state';
 import { createHud, createPrimaryButton, formatMoney } from '../ui';
@@ -67,7 +67,7 @@ const DECLINE_THOUGHTS: readonly string[] = [
 // has tapped the hat enough times to count as bargaining. Indexed
 // by (clickCount - HAT_CLICK_SUBTEXT_AT) modulo the list length —
 // loops indefinitely so the snark never runs out.
-const HAT_CLICK_SUBTEXT_AT = 6;
+const HAT_CLICK_SUBTEXT_AT = 3;
 const HAT_CLICK_SUBTEXT: readonly string[] = [
   "you've already maxed out your crow card.",
   'tapping it harder will not lower the price.',
@@ -314,6 +314,19 @@ export const storeScreen: Screen = {
       }
     });
 
+    // Rich crow winks + a red pixel heart pops on his flirty
+    // "see you in the office Sunday" close-out. Substring match
+    // so the line wording can vary between loops without
+    // breaking the cue.
+    let cancelWink: (() => void) | null = null;
+    dialogue.onLineComplete((_idx, line) => {
+      if (line.toLowerCase().includes('see you in the office')) {
+        cancelWink?.();
+        cancelWink = winkRich(richCrow);
+        popHeart(richCrow);
+      }
+    });
+
     const onTapSign = () => {
       if (beat !== 3) return;
       signed = true;
@@ -369,6 +382,7 @@ export const storeScreen: Screen = {
 
     return () => {
       if (startDelayTimer !== null) window.clearTimeout(startDelayTimer);
+      cancelWink?.();
       display.removeEventListener('click', onTapHat);
       dialogue.cleanup();
       root.remove();
