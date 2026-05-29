@@ -476,6 +476,24 @@
   .hud-wrap {
     margin-top: calc(env(safe-area-inset-top, 0px) + 3.25rem);
   }
+  /* Park the cawfee chip on its own row so the HN chip's reveal
+   * animation can grow on the top row without bumping a chip
+   * across a wrap boundary mid-transition. order:1 demotes it to
+   * the end of the flex sequence; flex-basis:100% forces a line
+   * break before it. The other (icon-only) chips share the top
+   * row with HN, where the score's added width is comfortable. */
+  .corner-stack .btn-cawfee {
+    order: 1;
+    flex-basis: 100%;
+    max-width: max-content;
+  }
+  /* Cawfee toast normally sits just under the single-row corner
+   * stack. On mobile the stack is two rows (HN+icons on top,
+   * cawfee alone below), so drop the toast another row-height
+   * down so it appears below cawfee instead of painting over it. */
+  .cawfee-toast {
+    top: calc(env(safe-area-inset-top, 0px) + 5rem);
+  }
 }
 
 /* ── Store screen ────────────────────────────────────────────────── */

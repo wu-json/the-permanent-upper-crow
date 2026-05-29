@@ -220,10 +220,10 @@ const cawfeeBtn = createCawfeeButton(() => {
   showCawfeeToast();
   playDenied();
 });
-cornerStack.appendChild(cawfeeBtn);
 cornerStack.appendChild(
   createHackerNewsLink('https://news.ycombinator.com/item?id=48310280'),
 );
+cornerStack.appendChild(cawfeeBtn);
 cornerStack.appendChild(
   createWebsiteLink(
     'https://www.jasonwu.ink/signals/2026-05-27-permanent-upper-class?theme=dark',
