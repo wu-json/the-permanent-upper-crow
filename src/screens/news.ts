@@ -4,6 +4,7 @@ import { createCrow } from '../crow';
 import { createDialogue } from '../dialogue';
 import { deriveLoopValues } from '../state';
 import { formatMoney } from '../ui';
+import { t } from '../translations';
 import type { Screen } from './types';
 
 const REPORTER_NAME = 'Trisha Cawkanawa';
@@ -67,8 +68,8 @@ export const newsScreen: Screen = {
     const nextBalance = deriveLoopValues(ctx.state.loop + 1).balance;
 
     const cast = getRichCast(ctx.state.loop);
-    const newsLines = makeNewsDialogue(cast.company, cast.product);
-    const chyronStrings = makeChyronStrings(cast.product);
+    const newsLines = t().news.lines(cast.company, cast.product);
+    const chyronStrings = t().news.chyron(cast.product);
 
     const root = document.createElement('div');
     root.classList.add('screen', 'screen-news');
@@ -86,7 +87,7 @@ export const newsScreen: Screen = {
 
     const live = document.createElement('div');
     live.classList.add('news-live');
-    live.innerHTML = `<span class="news-live-dot" aria-hidden="true"></span><span class="news-live-label">LIVE</span>`;
+    live.innerHTML = `<span class="news-live-dot" aria-hidden="true"></span><span class="news-live-label">${t().news.live}</span>`;
 
     const scene = document.createElement('div');
     scene.classList.add('news-scene');
@@ -98,14 +99,14 @@ export const newsScreen: Screen = {
     mic.innerHTML = MIC_SVG;
     const desk = document.createElement('div');
     desk.classList.add('news-desk');
-    desk.innerHTML = `<span class="news-desk-label">CNN</span>`;
+    desk.innerHTML = `<span class="news-desk-label">${t().news.networkLabel}</span>`;
     scene.append(reporter, mic, desk);
 
     const chyron = document.createElement('div');
     chyron.classList.add('news-chyron');
     const chyronLabel = document.createElement('span');
     chyronLabel.classList.add('news-chyron-tag');
-    chyronLabel.textContent = 'BREAKING';
+    chyronLabel.textContent = t().news.breaking;
     const chyronText = document.createElement('span');
     chyronText.classList.add('news-chyron-text');
     chyronText.textContent = chyronStrings[0];
@@ -115,7 +116,7 @@ export const newsScreen: Screen = {
     tv.appendChild(tvScreen);
 
     // Dialogue box (Trisha's report).
-    const dialogue = createDialogue({ speaker: REPORTER_NAME.toUpperCase() });
+    const dialogue = createDialogue({ speaker: t().news.reporterName.toUpperCase() });
     dialogue.el.classList.add('shown');
 
     // Balance reveal — full-screen, initially hidden. Shown after
@@ -126,7 +127,7 @@ export const newsScreen: Screen = {
     reveal.setAttribute('aria-hidden', 'true');
     const revealLabel = document.createElement('div');
     revealLabel.classList.add('news-reveal-label');
-    revealLabel.textContent = 'NEST WORTH';
+    revealLabel.textContent = t().news.nestWorth;
     const revealValue = document.createElement('div');
     revealValue.classList.add('news-reveal-value');
     revealValue.textContent = formatMoney(prevBalance);

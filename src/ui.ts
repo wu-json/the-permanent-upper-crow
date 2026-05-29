@@ -1,4 +1,5 @@
 import { isMuted, onMuteChange, toggleMute } from './audio';
+import { t } from './translations'
 
 export interface HudOptions {
   balance: number;
@@ -16,7 +17,7 @@ export function createHud({ balance }: HudOptions): HTMLElement {
 
   const labelEl = document.createElement('span');
   labelEl.classList.add('hud-label');
-  labelEl.textContent = 'NEST WORTH:';
+  labelEl.textContent = t().news.nestWorth;
 
   const balanceEl = document.createElement('span');
   balanceEl.classList.add('hud-balance');
@@ -134,8 +135,8 @@ export function createCawfeeButton(onClick: () => void): HTMLButtonElement {
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.classList.add('btn-corner', 'btn-cawfee');
-  btn.setAttribute('aria-label', 'buy me a cawfee');
-  btn.innerHTML = `${ICON_CAWFEE}<span class="btn-cawfee-label">buy me a cawfee</span>`;
+  btn.setAttribute('aria-label', t().exti.cawfeeBtn);
+  btn.innerHTML = `${ICON_CAWFEE}<span class="btn-cawfee-label">${t().exti.cawfeeBtn}</span>`;
   btn.addEventListener('click', onClick);
   return btn;
 }
